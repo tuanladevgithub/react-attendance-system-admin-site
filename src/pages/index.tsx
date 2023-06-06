@@ -5,7 +5,7 @@ import Layout from "@/components/layout";
 const inter = Inter({ subsets: ["latin"] });
 
 const Home = () => {
-  return <Layout>Home</Layout>;
+  return <Layout>Home page</Layout>;
 };
 
 export default Home;
