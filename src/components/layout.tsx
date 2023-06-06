@@ -3,6 +3,11 @@ import { Inter } from "next/font/google";
 import Image from "next/image";
 import logoImg from "../../public/logo.svg";
 import userImg from "../../public/user.png";
+import homeIcon from "../../public/home-icon.svg";
+import teacherIcon from "../../public/teacher-icon.svg";
+import studentIcon from "../../public/student-icon.svg";
+import courseIcon from "../../public/classroom-icon.svg";
+import settingIcon from "../../public/setting-icon.svg";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -21,6 +26,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       type: "single",
       title: "Home",
       path: "",
+      icon: homeIcon,
       isActive: router.pathname === "/",
     },
     {
@@ -28,6 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       type: "single",
       title: "Manage teacher",
       path: "teacher",
+      icon: teacherIcon,
       isActive: router.pathname.startsWith("/teacher"),
     },
     {
@@ -35,6 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       type: "single",
       title: "Manage student",
       path: "student",
+      icon: studentIcon,
       isActive: router.pathname.startsWith("/student"),
     },
     {
@@ -42,6 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       type: "single",
       title: "Subjects & courses",
       path: "subject-course",
+      icon: courseIcon,
       isActive: router.pathname.startsWith("/subject-course"),
     },
     {
@@ -49,6 +58,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       type: "multi",
       title: "Multi items",
       path: "multi-item",
+      icon: settingIcon,
       items: [
         {
           id: 1,
@@ -75,6 +85,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       type: "single",
       title: "Settings",
       path: "setting",
+      icon: settingIcon,
       isActive: router.pathname.startsWith("/setting"),
     },
   ];
@@ -101,14 +112,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     )}
                     href={`/${menuItem.path}`}
                   >
-                    <svg
+                    <Image
+                      src={menuItem.icon}
                       className="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                    </svg>
+                      alt={menuItem.title}
+                    />
                     <span>{menuItem.title}</span>
                   </Link>
                 );
@@ -122,18 +130,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       role="button"
                     >
                       <div className="flex items-center">
-                        <svg
+                        <Image
+                          src={menuItem.icon}
                           className="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                          alt={menuItem.title}
+                        />
                         <span>{menuItem.title}</span>
                       </div>
                       <svg
