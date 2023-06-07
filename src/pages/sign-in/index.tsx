@@ -36,26 +36,26 @@ const classNames = (...classes: string[]) => {
 
 const SignIn = () => {
   const router = useRouter();
-  const { teacher, mutate, error } = useUser();
-  const [email, setEmail] = useState("");
+  const { admin, mutate, error } = useUser();
+  const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorOccur, setErrorOccur] = useState(null);
 
   useEffect(() => {
-    if (teacher && !error) {
+    if (admin && !error) {
       router.replace("/");
     }
-  }, [router, teacher, error]);
+  }, [router, admin, error]);
 
-  const loginTeacher = async (email: string, pass: string) => {
+  const loginAdmin = async (username: string, pass: string) => {
     setLoading(true);
     await delay(2000);
     try {
       const { data } = await axios.post(
-        `${ATTENDANCE_API_DOMAIN}/auth/login-teacher`,
+        `${ATTENDANCE_API_DOMAIN}/auth/login-admin`,
         {
-          email,
+          username,
           pass,
         }
       );
@@ -88,21 +88,20 @@ const SignIn = () => {
           <form className="space-y-6">
             <div>
               <label
-                htmlFor="email"
+                htmlFor="username"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
-                Email address
+                Username
               </label>
               <div className="mt-2">
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="username"
+                  name="username"
+                  type="text"
                   required
-                  placeholder="sample@example.com"
+                  placeholder="admin"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
             </div>
@@ -129,7 +128,6 @@ const SignIn = () => {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
                   required
                   placeholder="*********"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -149,7 +147,7 @@ const SignIn = () => {
                   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 )}
                 onClick={() => {
-                  loginTeacher(email, pass);
+                  loginAdmin(username, pass);
                   mutate();
                 }}
               >
@@ -166,16 +164,6 @@ const SignIn = () => {
               </button>
             </div>
           </form>
-
-          <p className="mt-10 text-center text-sm text-gray-500">
-            Not a member?
-            <Link
-              href="#"
-              className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-            >
-              {" Please contact your admin!"}
-            </Link>
-          </p>
         </div>
       </div>
     </>

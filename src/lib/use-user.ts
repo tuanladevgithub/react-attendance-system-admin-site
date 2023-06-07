@@ -5,7 +5,7 @@ import { ATTENDANCE_API_DOMAIN } from "@/constants/axios-constant";
 
 const teacherFetcher = () =>
   axios
-    .get(`${ATTENDANCE_API_DOMAIN}/teacher/get-info`, {
+    .get(`${ATTENDANCE_API_DOMAIN}/admin/get-info`, {
       headers: {
         authorization: `Bearer ${Cookies.get("access_token")}`,
       },
@@ -13,17 +13,14 @@ const teacherFetcher = () =>
     .then((response) => response.data);
 
 export default function useUser() {
-  const { data, mutate, error } = useSWR(
-    "/api/teacher/get-info",
-    teacherFetcher
-  );
+  const { data, mutate, error } = useSWR("/api/admin/get-info", teacherFetcher);
 
   const isLoading = !data && !error;
 
   return {
     isLoading,
     error,
-    teacher: data,
+    admin: data,
     mutate,
   };
 }

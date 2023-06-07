@@ -10,7 +10,11 @@ import courseIcon from "../../public/classroom-icon.svg";
 import settingIcon from "../../public/setting-icon.svg";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { ChevronRightIcon } from "@heroicons/react/24/outline";
+import useUser from "@/lib/use-user";
+import { Fragment, useEffect } from "react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import { Menu, Transition } from "@headlessui/react";
+import Cookies from "js-cookie";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,6 +36,13 @@ const AlpineWidget = () => (
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const { admin, error } = useUser();
+
+  useEffect(() => {
+    if (!admin && error) {
+      router.replace("/sign-in");
+    }
+  }, [router, admin, error]);
 
   const menu = [
     {
@@ -201,23 +212,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 />
               </svg>
             </button>
-            <div className="hidden -ml-3 form-icon md:block w-96">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+            <div className="relative mx-2 rounded-md shadow-sm">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-1">
+                <MagnifyingGlassIcon className="text-gray-500 h-5 w-5" />
+              </div>
               <input
-                className="bg-transparent border-0 form-input"
-                placeholder="Search..."
+                type="text"
+                className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                placeholder="Search ..."
               />
             </div>
             <div className="flex items-center">
@@ -231,9 +233,49 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                 </svg>
               </Link>
-              <Link href="#" className="ml-4 avatar avatar-sm">
-                <Image src={userImg} alt="User photo" />
-              </Link>
+
+              <Menu as="div" className="relative ml-3">
+                <div>
+                  <Menu.Button className="flex rounded-full bg-gray-800 text-sm outline-none">
+                    <span className="sr-only">Open user menu</span>
+                    <Image
+                      className="h-8 w-8 rounded-full"
+                      src={userImg}
+                      alt="User avatar"
+                    />
+                  </Menu.Button>
+                </div>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          // href="/sign-in"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            Cookies.remove("access_token");
+                            router.reload();
+                          }}
+                          className={classNames(
+                            active ? " cursor-pointer bg-gray-100" : "",
+                            " cursor-pointer block px-4 py-2 text-sm text-gray-700"
+                          )}
+                        >
+                          Sign out
+                        </div>
+                      )}
+                    </Menu.Item>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
             </div>
           </header>
 
