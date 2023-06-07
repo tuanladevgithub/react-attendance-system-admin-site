@@ -1,13 +1,15 @@
-import Image from "next/image";
 import Layout from "@/components/layout";
 import {
   ChevronDownIcon,
   DevicePhoneMobileIcon,
-  EllipsisHorizontalIcon,
   EnvelopeIcon,
   IdentificationIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/solid";
+import {
+  ArrowUpTrayIcon,
+  EllipsisHorizontalCircleIcon,
+} from "@heroicons/react/24/outline";
 import { Listbox, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { classNames } from "@/utils/class-name-util";
@@ -81,9 +83,14 @@ const TeacherPage = () => {
   return (
     <Layout>
       <div className="bg-white rounded-lg shadow-xl">
-        {/* <div className="header-group">
-          <div className="sm:px-10 w-full">Danh sách giảng viên</div>
-        </div> */}
+        <div className="header-group w-full px-10 py-5">
+          <h1 className="text-xl font-semibold text-gray-900">
+            Teacher management
+          </h1>
+          <span className="text-sm text-gray-600">
+            *List of teachers bellow.
+          </span>
+        </div>
 
         <div className="table-teacher-group h-full overflow-hidden flex items-center justify-center">
           <div className="sm:px-6 w-full">
@@ -161,18 +168,27 @@ const TeacherPage = () => {
                     />
                   </div>
 
-                  <button className="mx-2 inline-flex items-start justify-start px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded">
+                  <button className="mx-2 inline-flex items-start justify-start px-6 py-3 bg-green-600 hover:bg-green-500 focus:outline-none rounded">
                     <p className="text-sm font-medium leading-none text-white">
                       Search
                     </p>
                   </button>
                 </div>
 
-                <button className="inline-flex items-start justify-start px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded">
-                  <p className="text-sm font-medium leading-none text-white">
-                    Add teacher
-                  </p>
-                </button>
+                <div className="flex items-center">
+                  <button className="mx-2 flex items-center justify-center px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded">
+                    <ArrowUpTrayIcon className="h-[14px] mr-3 text-sm font-medium leading-none text-white" />
+                    <p className="text-sm font-medium leading-none text-white">
+                      Import CSV
+                    </p>
+                  </button>
+
+                  <button className="inline-flex items-start justify-start px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded">
+                    <p className="text-sm font-medium leading-none text-white">
+                      Add teacher
+                    </p>
+                  </button>
+                </div>
               </div>
 
               <div className="mt-7 overflow-x-auto">
@@ -298,7 +314,7 @@ const TeacherPage = () => {
                             role="button"
                             aria-label="option"
                           >
-                            <EllipsisHorizontalIcon className="w-6 text-gray-500" />
+                            <EllipsisHorizontalCircleIcon className="w-6 text-gray-500" />
                           </button>
 
                           <div className="dropdown-content bg-white shadow w-24 absolute z-30 right-0 mr-6 hidden">

@@ -10,12 +10,25 @@ import courseIcon from "../../public/classroom-icon.svg";
 import settingIcon from "../../public/setting-icon.svg";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
 const inter = Inter({ subsets: ["latin"] });
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
+
+const alpineString = `<div>
+  <svg :class="{ 'rotate-90': open }" className="hrink-0 w-4 h-4 ml-2 transition transform" style=" width: 1rem; height: 1rem;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+  </svg>
+</div>`;
+
+const AlpineWidget = () => (
+  <>
+    <div dangerouslySetInnerHTML={{ __html: alpineString }} />
+  </>
+);
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -124,10 +137,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
               if (menuItem.type === "multi") {
                 return (
-                  <div key={menuItem.id}>
+                  <div key={menuItem.id} x-data="collapse()">
                     <div
                       className="flex items-center justify-between px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
                       role="button"
+                      aria-controls={`collapseItem${menuItem.id}`}
+                      aria-expanded="false"
+                      x-spread="trigger"
                     >
                       <div className="flex items-center">
                         <Image
@@ -137,21 +153,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         />
                         <span>{menuItem.title}</span>
                       </div>
-                      <svg
-                        className="shrink-0 w-4 h-4 ml-2 transition transform"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <AlpineWidget />
                     </div>
 
-                    <div className="mb-4">
+                    <div
+                      className="mb-4"
+                      id={`collapseItem${menuItem.id}`}
+                      x-spread="collapse"
+                      x-cloak="true"
+                    >
                       {menuItem.items?.map((subMenuItem) => (
                         <Link
                           key={subMenuItem.id}
