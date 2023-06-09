@@ -16,11 +16,15 @@ import { classNames } from "@/utils/class-name-util";
 import { Department } from "@/types/department.type";
 import axios from "axios";
 import { ATTENDANCE_API_DOMAIN } from "@/constants/axios-constant";
+import { Teacher } from "@/types/teacher.type";
+import Cookies from "js-cookie";
 
 const TeacherPage = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null);
+  const [searchText, setSearchText] = useState<string | undefined>(undefined);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
 
   useEffect(() => {
     const fetchListOfDepartments = async () => {
@@ -30,6 +34,37 @@ const TeacherPage = () => {
 
     fetchListOfDepartments();
   }, []);
+
+  useEffect(() => {
+    const fetchListOfTeachers = async () => {
+      const { data } = await axios.get(
+        `${ATTENDANCE_API_DOMAIN}/admin/search-teacher`,
+        {
+          headers: {
+            authorization: `Bearer ${Cookies.get("access_token")}`,
+          },
+        }
+      );
+      setTeachers(data);
+    };
+
+    fetchListOfTeachers();
+  }, []);
+
+  const handleSearchTeacher = async () => {
+    const url = `${ATTENDANCE_API_DOMAIN}/admin/search-teacher`;
+
+    const { data } = await axios.get(url, {
+      headers: {
+        authorization: `Bearer ${Cookies.get("access_token")}`,
+      },
+      params: {
+        departmentId: !selectedDepartment ? undefined : selectedDepartment.id,
+        searchText: searchText ?? undefined,
+      },
+    });
+    setTeachers(data);
+  };
 
   return (
     <Layout>
@@ -145,12 +180,17 @@ const TeacherPage = () => {
                     </div>
                     <input
                       type="text"
+                      value={searchText}
+                      onChange={(e) => setSearchText(e.target.value)}
                       className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       placeholder="Search text..."
                     />
                   </div>
 
-                  <button className="mx-2 inline-flex items-start justify-start px-6 py-3 bg-green-600 hover:bg-green-500 focus:outline-none rounded">
+                  <button
+                    onClick={handleSearchTeacher}
+                    className="mx-2 inline-flex items-start justify-start px-6 py-3 bg-green-600 hover:bg-green-500 focus:outline-none rounded"
+                  >
                     <p className="text-sm font-medium leading-none text-white">
                       Search
                     </p>
@@ -192,7 +232,7 @@ const TeacherPage = () => {
 
                       <th className="px-6 py-3">Email address</th>
 
-                      <th className="px-6 py-3">Gender</th>
+                      <th className="px-6 py-3">Department</th>
 
                       <th className="px-6 py-3">Phone number</th>
 
@@ -203,11 +243,13 @@ const TeacherPage = () => {
                   </thead>
 
                   <tbody>
-                    <tr
-                      tabIndex={0}
-                      className="focus:outline-none h-16 border border-gray-100 rounded"
-                    >
-                      {/* <td className="pl-4">
+                    {teachers.map((teacher) => (
+                      <tr
+                        key={teacher.id}
+                        tabIndex={0}
+                        className="focus:outline-none h-16 border border-gray-100 rounded"
+                      >
+                        {/* <td className="pl-4">
                         <div className="ml-5">
                           <div className="bg-gray-200 rounded-sm w-5 h-5 flex flex-shrink-0 justify-center items-center relative">
                             <input
@@ -236,86 +278,84 @@ const TeacherPage = () => {
                         </div>
                       </td> */}
 
-                      <td className="px-6">
-                        <div className="flex items-center">
-                          <IdentificationIcon className="w-6 text-gray-500" />
+                        <td className="px-6">
+                          <div className="flex items-center">
+                            <IdentificationIcon className="w-6 text-gray-500" />
+                            <p className="text-sm leading-none text-gray-600 ml-1">
+                              {teacher.teacher_code}
+                            </p>
+                          </div>
+                        </td>
 
-                          <p className="text-sm leading-none text-gray-600 ml-1">
-                            123456
-                          </p>
-                        </div>
-                      </td>
+                        <td className="px-6 focus:text-indigo-600">
+                          <div className="flex items-center">
+                            <p className="text-sm leading-none text-gray-700">
+                              {`${teacher.last_name} ${teacher.first_name}`}
+                            </p>
+                          </div>
+                        </td>
 
-                      <td className="px-6 focus:text-indigo-600">
-                        <div className="flex items-center">
-                          <p className="text-sm leading-none text-gray-700">
-                            Lê Bá Vui
-                          </p>
-                        </div>
-                      </td>
+                        <td className="px-6">
+                          <div className="flex items-center">
+                            <EnvelopeIcon className="w-6 text-gray-500" />
+                            <p className="text-sm leading-none text-gray-600 ml-1">
+                              {teacher.email}
+                            </p>
+                          </div>
+                        </td>
 
-                      <td className="px-6">
-                        <div className="flex items-center">
-                          <EnvelopeIcon className="w-6 text-gray-500" />
+                        <td className="px-6">
+                          <div className="flex items-center">
+                            <p className="text-sm leading-none text-gray-600 ml-1">
+                              {teacher.department?.department_name}
+                            </p>
+                          </div>
+                        </td>
 
-                          <p className="text-sm leading-none text-gray-600 ml-1">
-                            le.ba.vui@soict.hust.edu.vn
-                          </p>
-                        </div>
-                      </td>
+                        <td className="px-6">
+                          <div className="flex items-center">
+                            <DevicePhoneMobileIcon className="w-6 text-gray-500" />
+                            <p className="text-sm leading-none text-gray-600 ml-2">
+                              {teacher.phone_number ?? "..."}
+                            </p>
+                          </div>
+                        </td>
 
-                      <td className="px-6">
-                        <div className="flex items-center">
-                          <p className="text-sm leading-none text-gray-600 ml-1">
-                            Male
-                          </p>
-                        </div>
-                      </td>
-
-                      <td className="px-6">
-                        <div className="flex items-center">
-                          <DevicePhoneMobileIcon className="w-6 text-gray-500" />
-
-                          <p className="text-sm leading-none text-gray-600 ml-2">
-                            0325293636
-                          </p>
-                        </div>
-                      </td>
-
-                      <td className="px-6">
-                        <button className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none">
-                          View
-                        </button>
-                      </td>
-
-                      <td className="px-6">
-                        <div className="relative px-5 pt-2">
-                          <button
-                            className="rounded-md focus:outline-none"
-                            onClick={() => console.log("Add task")}
-                            role="button"
-                            aria-label="option"
-                          >
-                            <EllipsisHorizontalCircleIcon className="w-6 text-gray-500" />
+                        <td className="px-6">
+                          <button className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none">
+                            View
                           </button>
+                        </td>
 
-                          <div className="dropdown-content bg-white shadow w-24 absolute z-30 right-0 mr-6 hidden">
-                            <div
-                              tabIndex={0}
-                              className="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
+                        <td className="px-6">
+                          <div className="relative px-5 pt-2">
+                            <button
+                              className="rounded-md focus:outline-none"
+                              onClick={() => console.log("Add task")}
+                              role="button"
+                              aria-label="option"
                             >
-                              <p>Edit</p>
-                            </div>
-                            <div
-                              tabIndex={0}
-                              className="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
-                            >
-                              <p>Delete</p>
+                              <EllipsisHorizontalCircleIcon className="w-6 text-gray-500" />
+                            </button>
+
+                            <div className="dropdown-content bg-white shadow w-24 absolute z-30 right-0 mr-6 hidden">
+                              <div
+                                tabIndex={0}
+                                className="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
+                              >
+                                <p>Edit</p>
+                              </div>
+                              <div
+                                tabIndex={0}
+                                className="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
+                              >
+                                <p>Delete</p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                    </tr>
+                        </td>
+                      </tr>
+                    ))}
                     <tr className="h-3"></tr>
                   </tbody>
                 </table>
