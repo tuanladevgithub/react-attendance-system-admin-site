@@ -77,7 +77,6 @@ const StudentPage = () => {
 
   const handleImportCsv = async () => {
     if (!fileCsv) return;
-    console.log(fileCsv);
     setIsUploading(true);
     await delay(2000);
     try {
@@ -88,7 +87,7 @@ const StudentPage = () => {
       const { data } = await axios.post<{
         isSuccess: boolean;
         errors: string[];
-      }>(`${ATTENDANCE_API_DOMAIN}/admin/upload-teacher-csv`, formData, {
+      }>(`${ATTENDANCE_API_DOMAIN}/admin/upload-student-csv`, formData, {
         headers: {
           authorization: `Bearer ${Cookies.get("access_token")}`,
         },
