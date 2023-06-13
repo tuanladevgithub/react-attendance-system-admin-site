@@ -23,6 +23,7 @@ import { delay } from "@/utils/delay-util";
 import Image from "next/image";
 import spinnerImg from "../../../public/oval.svg";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const TeacherPage = () => {
   const router = useRouter();
@@ -372,8 +373,11 @@ const TeacherPage = () => {
                           </td>
 
                           <td className="px-6">
-                            <button className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none">
-                              View
+                            <button
+                              onClick={(e) => e.preventDefault()}
+                              className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none"
+                            >
+                              <Link href={`/teacher/${teacher.id}`}>View</Link>
                             </button>
                           </td>
 
