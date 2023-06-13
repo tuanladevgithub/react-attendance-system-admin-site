@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { ATTENDANCE_API_DOMAIN } from "@/constants/axios-constant";
 import { Department } from "@/types/department.type";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import { EyeIcon, EyeSlashIcon, UsersIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import Cookies from "js-cookie";
 import Image from "next/image";
@@ -10,6 +10,10 @@ import { useEffect, useState } from "react";
 import { Teacher } from "@/types/teacher.type";
 import { classNames } from "@/utils/class-name-util";
 import { delay } from "@/utils/delay-util";
+import emptyDataImg from "../../../../public/empty-data.svg";
+import courseImg from "../../../../public/course-img.jpg";
+import { Course } from "@/types/course.type";
+import Link from "next/link";
 
 const TeacherDetailPage = () => {
   const router = useRouter();
@@ -27,6 +31,7 @@ const TeacherDetailPage = () => {
     phone_number?: string;
     description?: string;
   }>();
+  const [courses, setCourses] = useState<Course[]>([]);
 
   useEffect(() => {
     const fetchListOfDepartments = async () => {
@@ -54,6 +59,22 @@ const TeacherDetailPage = () => {
       fetchTeacherData();
     }
   }, [teacherId]);
+
+  useEffect(() => {
+    const fetchListOfTeacherCourses = async () => {
+      const { data } = await axios.get(
+        `${ATTENDANCE_API_DOMAIN}/admin/get-teacher-course/${teacherId}`,
+        {
+          headers: {
+            authorization: `Bearer ${Cookies.get("access_token")}`,
+          },
+        }
+      );
+      setCourses(data);
+    };
+
+    fetchListOfTeacherCourses();
+  }, []);
 
   const handleUpdateTeacherInfo = async () => {
     await delay(1000);
@@ -405,8 +426,66 @@ const TeacherDetailPage = () => {
                         List of courses
                       </h2>
 
-                      <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                        ...
+                      <div className="mt-5">
+                        {!courses || courses.length < 1 ? (
+                          <div className="mx-auto my-5 w-full h-fit flex justify-center items-center">
+                            <div className="flex flex-col justify-center items-center">
+                              <div>
+                                <Image
+                                  className="h-60 w-auto"
+                                  src={emptyDataImg}
+                                  alt="Data empty to display"
+                                />
+                              </div>
+                              <div className="text-base text-gray-500">
+                                No data to display.
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="mx-auto my-5 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3 xl:gap-x-8">
+                            {courses.map((course) => (
+                              <div key={course.id} className="group relative">
+                                <div className="bg-white w-full border-solid border rounded-lg">
+                                  <div className="aspect-h-1 aspect-w-2 w-full overflow-hidden rounded-t-lg bg-gray-200">
+                                    <Image
+                                      src={courseImg}
+                                      alt={`${course.subject?.subject_code} - ${course.course_code}`}
+                                      className="h-full w-full object-cover object-center group-hover:opacity-75"
+                                    />
+                                  </div>
+                                  <div className="my-1 px-2 flex justify-between">
+                                    <div>
+                                      <h3 className="text-base text-blue-500">
+                                        <Link
+                                          href={`/course/${course.id}/session`}
+                                        >
+                                          <span
+                                            aria-hidden="true"
+                                            className="absolute inset-0"
+                                          />
+                                          {course.subject?.subject_name}
+                                        </Link>
+                                      </h3>
+                                      <p className="mt-1 text-sm text-gray-500">
+                                        {`${course.subject?.subject_code} - ${course.course_code}`}
+                                      </p>
+                                    </div>
+                                    <div className="flex flex-col items-center justify-center text-sm font-medium text-gray-700">
+                                      <div className="mx-1">
+                                        <UsersIcon
+                                          className="h-5 w-5"
+                                          aria-hidden="true"
+                                        />
+                                      </div>
+                                      <p>{course.countStudents}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
