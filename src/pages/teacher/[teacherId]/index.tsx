@@ -446,7 +446,7 @@ const TeacherDetailPage = () => {
                           <div className="mx-auto my-5 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3 xl:gap-x-8">
                             {courses.map((course) => (
                               <div key={course.id} className="group relative">
-                                <div className="bg-white w-full border-solid border rounded-lg">
+                                <div className="bg-slate-50 w-full border-solid border rounded-lg shadow-lg">
                                   <div className="aspect-h-1 aspect-w-2 w-full overflow-hidden rounded-t-lg bg-gray-200">
                                     <Image
                                       src={courseImg}
