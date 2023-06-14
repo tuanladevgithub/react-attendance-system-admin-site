@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { Teacher } from "@/types/teacher.type";
 import { classNames } from "@/utils/class-name-util";
 import { delay } from "@/utils/delay-util";
+import teacherImg from "../../../../public/teacher.png";
 import emptyDataImg from "../../../../public/empty-data.svg";
 import courseImg from "../../../../public/course-img.jpg";
 import { Course } from "@/types/course.type";
@@ -19,6 +20,7 @@ const TeacherDetailPage = () => {
   const router = useRouter();
   const teacherId = router.query.teacherId;
 
+  const [fileTeacherImg, setFileTeacherImg] = useState<File>();
   const [showInputPassword, setShowInputPassword] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -105,16 +107,40 @@ const TeacherDetailPage = () => {
 
           {teacherData && (
             <div className="teacher-info-group grid grid-cols-5">
-              <div className="teacher-image col-span-2 py-4 px-16 flex justify-center">
-                <div className="relative w-full h-auto min-h-fit rounded-md">
-                  <Image
-                    src={
-                      "https://soict.hust.edu.vn/wp-content/uploads/2019/06/DHP_5811.jpg"
-                    }
-                    alt="Teacher image"
-                    fill
-                  />
+              <div className="teacher-image border-r border-gray-900/10 col-span-2 py-4 px-16 flex flex-col justify-start items-center gap-y-6">
+                <div className="relative bg-slate-200 w-[350px] h-[450px] flex items-center justify-center">
+                  <Image src={teacherImg} alt="Teacher image" />
                 </div>
+
+                <div>
+                  <form className="flex items-center">
+                    <label className="block">
+                      <span className="sr-only">Choose image file</span>
+                      <input
+                        type="file"
+                        className="block w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border file:border-green-600 file:border-dashed file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 file:cursor-pointer hover:file:bg-green-100 focus:outline-none"
+                        accept=".png"
+                        onChange={(e) => {
+                          if (e.target.files)
+                            setFileTeacherImg(e.target.files[0]);
+                        }}
+                      />
+                    </label>
+                  </form>
+                </div>
+                <button
+                  type="button"
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  //   setShowInputPassword(true);
+                  // }}
+                  className={classNames(
+                    !fileTeacherImg ? "hidden" : "",
+                    "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  )}
+                >
+                  Update image
+                </button>
               </div>
 
               <div className="teacher-detail col-span-3 p-4">
@@ -421,7 +447,7 @@ const TeacherDetailPage = () => {
                       </div>
                     </div>
 
-                    <div className="border-b border-gray-900/10 pb-6">
+                    <div className="pb-6">
                       <h2 className="text-base font-semibold leading-7 text-gray-900">
                         List of courses
                       </h2>
