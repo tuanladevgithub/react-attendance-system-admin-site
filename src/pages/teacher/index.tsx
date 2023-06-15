@@ -38,6 +38,16 @@ const TeacherPage = () => {
   const [fileCsv, setFileCsv] = useState<File>();
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
+  const [showDialogAddTeacher, setShowDialogAddTeacher] =
+    useState<boolean>(false);
+  const [teacherCreateData, setTeacherCreateData] = useState<{
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    m_department_id?: number;
+    phone_number?: string;
+    description?: string;
+  }>();
 
   useEffect(() => {
     const fetchListOfDepartments = async () => {
@@ -108,6 +118,17 @@ const TeacherPage = () => {
       console.log(error);
     }
     setIsUploading(false);
+  };
+
+  const handleAddTeacher = async () => {
+    const url = `${ATTENDANCE_API_DOMAIN}/admin/create-teacher`;
+
+    const { data } = await axios.post(url, teacherCreateData, {
+      headers: {
+        authorization: `Bearer ${Cookies.get("access_token")}`,
+      },
+    });
+    router.reload();
   };
 
   return (
@@ -256,7 +277,13 @@ const TeacherPage = () => {
                       </p>
                     </button>
 
-                    <button className="inline-flex items-start justify-start px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowDialogAddTeacher(true);
+                      }}
+                      className="inline-flex items-start justify-start px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded"
+                    >
                       <p className="text-sm font-medium leading-none text-white">
                         Add teacher
                       </p>
@@ -596,6 +623,271 @@ const TeacherPage = () => {
                         setShowDialogImportCsv(false);
                         setFileCsv(undefined);
                         setUploadErrors([]);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      <Transition.Root show={showDialogAddTeacher} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => {
+            setShowDialogAddTeacher(false);
+          }}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                        <Dialog.Title
+                          as="h3"
+                          className="text-base font-semibold leading-6 text-gray-900"
+                        >
+                          Create teacher
+                        </Dialog.Title>
+                        <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                          <div className="sm:col-span-3">
+                            <label
+                              htmlFor="first_name"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              First name<span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <input
+                                type="text"
+                                name="first_name"
+                                placeholder="Ex: Anh Tuan"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setTeacherCreateData(
+                                    !teacherCreateData
+                                      ? { first_name: e.target.value }
+                                      : {
+                                          ...teacherCreateData,
+                                          first_name: e.target.value,
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label
+                              htmlFor="last_name"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Last name<span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <input
+                                type="text"
+                                name="last_name"
+                                placeholder="Ex: Le"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setTeacherCreateData(
+                                    !teacherCreateData
+                                      ? { last_name: e.target.value }
+                                      : {
+                                          ...teacherCreateData,
+                                          last_name: e.target.value,
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-6">
+                            <label
+                              htmlFor="email"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Email address
+                              <span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <input
+                                name="email"
+                                type="email"
+                                placeholder="Ex: teacher@sample.com"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setTeacherCreateData(
+                                    !teacherCreateData
+                                      ? { email: e.target.value }
+                                      : {
+                                          ...teacherCreateData,
+                                          email: e.target.value,
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label
+                              htmlFor="department"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Department<span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <select
+                                name="department"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setTeacherCreateData(
+                                    !teacherCreateData
+                                      ? {
+                                          m_department_id: Number(
+                                            e.target.value
+                                          ),
+                                        }
+                                      : {
+                                          ...teacherCreateData,
+                                          m_department_id: Number(
+                                            e.target.value
+                                          ),
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              >
+                                <option disabled selected value={undefined}>
+                                  --- Select department ---
+                                </option>
+                                {departments.map((department) => (
+                                  <option
+                                    key={department.id}
+                                    value={department.id}
+                                  >
+                                    {department.department_name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label
+                              htmlFor="email"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Phone number
+                            </label>
+                            <div className="mt-2">
+                              <input
+                                type="text"
+                                name="phone_number"
+                                placeholder="Ex: 0123456789"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setTeacherCreateData(
+                                    !teacherCreateData
+                                      ? { phone_number: e.target.value }
+                                      : {
+                                          ...teacherCreateData,
+                                          phone_number: e.target.value,
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="col-span-full">
+                            <label
+                              htmlFor="about"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Description
+                            </label>
+                            <div className="mt-2">
+                              <textarea
+                                name="description"
+                                rows={4}
+                                placeholder="Ex: Now he is a Senior Lecturer at the Department of Computer Science, School of Information and Communication Technology (SoICT), Hanoi University of Science and Technology (HUST)."
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setTeacherCreateData(
+                                    !teacherCreateData
+                                      ? { description: e.target.value }
+                                      : {
+                                          ...teacherCreateData,
+                                          description: e.target.value,
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button
+                      type="button"
+                      className={classNames(
+                        !teacherCreateData ||
+                          !teacherCreateData.first_name ||
+                          !teacherCreateData.last_name ||
+                          !teacherCreateData.email ||
+                          !teacherCreateData.m_department_id
+                          ? "bg-gray-500 cursor-not-allowed"
+                          : "bg-green-600 hover:bg-green-500",
+                        "inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto"
+                      )}
+                      onClick={handleAddTeacher}
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowDialogAddTeacher(false);
                       }}
                     >
                       Cancel
