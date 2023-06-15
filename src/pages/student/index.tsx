@@ -43,6 +43,16 @@ const StudentPage = () => {
   const [fileCsv, setFileCsv] = useState<File>();
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
+  const [showDialogAddStudent, setShowDialogAddStudent] =
+    useState<boolean>(false);
+  const [studentCreateData, setStudentCreateData] = useState<{
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    gender?: "MALE" | "FEMALE";
+    phone_number?: string;
+    age?: number;
+  }>();
 
   useEffect(() => {
     const fetchListOfStudents = async () => {
@@ -103,6 +113,17 @@ const StudentPage = () => {
       console.log(error);
     }
     setIsUploading(false);
+  };
+
+  const handleAddStudent = async () => {
+    const url = `${ATTENDANCE_API_DOMAIN}/admin/create-student`;
+
+    const { data } = await axios.post(url, studentCreateData, {
+      headers: {
+        authorization: `Bearer ${Cookies.get("access_token")}`,
+      },
+    });
+    router.reload();
   };
 
   return (
@@ -223,9 +244,15 @@ const StudentPage = () => {
                       </p>
                     </button>
 
-                    <button className="inline-flex items-start justify-start px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowDialogAddStudent(true);
+                      }}
+                      className="inline-flex items-start justify-start px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded"
+                    >
                       <p className="text-sm font-medium leading-none text-white">
-                        Add teacher
+                        Add student
                       </p>
                     </button>
                   </div>
@@ -570,6 +597,265 @@ const StudentPage = () => {
                         setShowDialogImportCsv(false);
                         setFileCsv(undefined);
                         setUploadErrors([]);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      <Transition.Root show={showDialogAddStudent} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => {
+            setShowDialogAddStudent(false);
+          }}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                        <Dialog.Title
+                          as="h3"
+                          className="text-base font-semibold leading-6 text-gray-900"
+                        >
+                          Create student
+                        </Dialog.Title>
+                        <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                          <div className="sm:col-span-3">
+                            <label
+                              htmlFor="first_name"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              First name<span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <input
+                                type="text"
+                                name="first_name"
+                                placeholder="Ex: Anh Tuan"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setStudentCreateData(
+                                    !studentCreateData
+                                      ? { first_name: e.target.value }
+                                      : {
+                                          ...studentCreateData,
+                                          first_name: e.target.value,
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label
+                              htmlFor="last_name"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Last name<span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <input
+                                type="text"
+                                name="last_name"
+                                placeholder="Ex: Le"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setStudentCreateData(
+                                    !studentCreateData
+                                      ? { last_name: e.target.value }
+                                      : {
+                                          ...studentCreateData,
+                                          last_name: e.target.value,
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="col-span-full">
+                            <label
+                              htmlFor="email"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Email address
+                              <span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <input
+                                name="email"
+                                type="email"
+                                placeholder="Ex: student@sample.com"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setStudentCreateData(
+                                    !studentCreateData
+                                      ? { email: e.target.value }
+                                      : {
+                                          ...studentCreateData,
+                                          email: e.target.value,
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-2">
+                            <label
+                              htmlFor="phone_number"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Phone number
+                            </label>
+                            <div className="mt-2">
+                              <input
+                                type="text"
+                                name="phone_number"
+                                placeholder="Ex: 0123456789"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setStudentCreateData(
+                                    !studentCreateData
+                                      ? { phone_number: e.target.value }
+                                      : {
+                                          ...studentCreateData,
+                                          phone_number: e.target.value,
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-2">
+                            <label
+                              htmlFor="department"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Gender<span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <select
+                                name="gender"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setStudentCreateData(
+                                    !studentCreateData
+                                      ? {
+                                          gender: e.target.value as
+                                            | "MALE"
+                                            | "FEMALE",
+                                        }
+                                      : {
+                                          ...studentCreateData,
+                                          gender: e.target.value as
+                                            | "MALE"
+                                            | "FEMALE",
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              >
+                                <option disabled selected value={undefined}>
+                                  --- Gender ---
+                                </option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-2">
+                            <label
+                              htmlFor="age"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Age
+                            </label>
+                            <div className="mt-2">
+                              <input
+                                type="text"
+                                name="age"
+                                placeholder="Ex: 20"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setStudentCreateData(
+                                    !studentCreateData
+                                      ? { age: parseInt(e.target.value) }
+                                      : {
+                                          ...studentCreateData,
+                                          age: parseInt(e.target.value),
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button
+                      type="button"
+                      className={classNames(
+                        !studentCreateData ||
+                          !studentCreateData.first_name ||
+                          !studentCreateData.last_name ||
+                          !studentCreateData.email ||
+                          !studentCreateData.gender
+                          ? "bg-gray-500 cursor-not-allowed"
+                          : "bg-green-600 hover:bg-green-500",
+                        "inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto"
+                      )}
+                      onClick={handleAddStudent}
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowDialogAddStudent(false);
                       }}
                     >
                       Cancel

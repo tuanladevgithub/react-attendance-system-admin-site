@@ -248,7 +248,7 @@ const TeacherDetailPage = () => {
 
                         <div className="sm:col-span-3">
                           <label
-                            htmlFor="last_name"
+                            htmlFor="teacher_code"
                             className="block text-sm font-medium leading-6 text-gray-900"
                           >
                             Teacher code
@@ -294,7 +294,7 @@ const TeacherDetailPage = () => {
 
                         <div className="sm:col-span-3">
                           <label
-                            htmlFor="email"
+                            htmlFor="phone_number"
                             className="block text-sm font-medium leading-6 text-gray-900"
                           >
                             Phone number
@@ -322,7 +322,7 @@ const TeacherDetailPage = () => {
 
                         <div className="col-span-full">
                           <label
-                            htmlFor="about"
+                            htmlFor="description"
                             className="block text-sm font-medium leading-6 text-gray-900"
                           >
                             About
