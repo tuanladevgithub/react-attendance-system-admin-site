@@ -76,7 +76,7 @@ const TeacherDetailPage = () => {
     };
 
     fetchListOfTeacherCourses();
-  }, []);
+  }, [teacherId]);
 
   const handleUpdateTeacherInfo = async () => {
     await delay(1000);
