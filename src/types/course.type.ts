@@ -1,4 +1,5 @@
 import { Subject } from "./subject.type";
+import { Teacher } from "./teacher.type";
 
 export type CourseSchedule = {
   id: number;
@@ -31,11 +32,13 @@ export type Course = {
 
   start_date: string;
 
-  end_date?: string;
+  end_date: string;
 
   countStudents?: number;
 
   subject?: Subject;
+
+  teacher?: Teacher;
 
   courseSchedules?: CourseSchedule[];
 };

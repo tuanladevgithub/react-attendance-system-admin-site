@@ -22,6 +22,8 @@ import { delay } from "@/utils/delay-util";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import { Course } from "@/types/course.type";
+import ReactDatePicker from "react-datepicker";
+import { format } from "date-fns";
 
 const SubjectAndCoursePage = () => {
   const router = useRouter();
@@ -45,6 +47,15 @@ const SubjectAndCoursePage = () => {
   const [fileCsv, setFileCsv] = useState<File>();
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
+  const [showDialogAddCourse, setShowDialogAddCourse] =
+    useState<boolean>(false);
+  const [courseCreateData, setCourseCreateData] = useState<{
+    m_subject_id?: number;
+    teacher_code_or_email?: string;
+    start_date?: string;
+    end_date?: string;
+    description?: string;
+  }>();
 
   useEffect(() => {
     const fetchListOfSubjects = async () => {
@@ -115,6 +126,17 @@ const SubjectAndCoursePage = () => {
       console.log(error);
     }
     setIsUploading(false);
+  };
+
+  const handleAddCourse = async () => {
+    const url = `${ATTENDANCE_API_DOMAIN}/admin/create-course`;
+
+    const { data } = await axios.post(url, courseCreateData, {
+      headers: {
+        authorization: `Bearer ${Cookies.get("access_token")}`,
+      },
+    });
+    router.reload();
   };
 
   return (
@@ -300,7 +322,13 @@ const SubjectAndCoursePage = () => {
                       </p>
                     </button>
 
-                    <button className="inline-flex items-start justify-start px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowDialogAddCourse(true);
+                      }}
+                      className="inline-flex items-start justify-start px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded"
+                    >
                       <p className="text-sm font-medium leading-none text-white">
                         Add course
                       </p>
@@ -547,6 +575,292 @@ const SubjectAndCoursePage = () => {
                         setShowDialogImportCsv(false);
                         setFileCsv(undefined);
                         setUploadErrors([]);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      <Transition.Root show={showDialogAddCourse} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => {
+            setShowDialogAddCourse(false);
+          }}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <div className="mt-3 text-center sm:mt-0 sm:text-left">
+                        <Dialog.Title
+                          as="h3"
+                          className="text-base font-semibold leading-6 text-gray-900"
+                        >
+                          Create course
+                        </Dialog.Title>
+                        <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                          <div className="sm:col-span-full">
+                            <label
+                              htmlFor="subject"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Subject<span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <select
+                                name="subject"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setCourseCreateData(
+                                    !courseCreateData
+                                      ? {
+                                          m_subject_id: Number(e.target.value),
+                                        }
+                                      : {
+                                          ...courseCreateData,
+                                          m_subject_id: Number(e.target.value),
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              >
+                                <option disabled selected value={undefined}>
+                                  --- Select subject ---
+                                </option>
+                                {subjects.map((subject) => (
+                                  <option key={subject.id} value={subject.id}>
+                                    {`${subject.subject_code} - ${subject.subject_name}`}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-full">
+                            <label
+                              htmlFor="teacher_code_or_email"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Teacher code or email
+                              <span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <input
+                                type="text"
+                                name="teacher_code_or_email"
+                                placeholder={`Ex: "20230000" or "teacher@sample.com"`}
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setCourseCreateData(
+                                    !courseCreateData
+                                      ? {
+                                          teacher_code_or_email: e.target.value,
+                                        }
+                                      : {
+                                          ...courseCreateData,
+                                          teacher_code_or_email: e.target.value,
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label
+                              htmlFor="start_date"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Start date<span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <ReactDatePicker
+                                className="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                selected={
+                                  !courseCreateData?.start_date
+                                    ? undefined
+                                    : new Date(courseCreateData.start_date)
+                                }
+                                onChange={(date: Date) => {
+                                  setCourseCreateData(
+                                    !courseCreateData
+                                      ? {
+                                          start_date: !date
+                                            ? undefined
+                                            : format(date, "yyyy-MM-dd"),
+                                        }
+                                      : {
+                                          ...courseCreateData,
+                                          start_date: !date
+                                            ? undefined
+                                            : format(date, "yyyy-MM-dd"),
+                                        }
+                                  );
+                                }}
+                                dateFormat={"dd MMM yyyy"}
+                                showIcon
+                                isClearable
+                                selectsStart
+                                startDate={
+                                  !courseCreateData?.start_date
+                                    ? undefined
+                                    : new Date(courseCreateData.start_date)
+                                }
+                                endDate={
+                                  !courseCreateData?.end_date
+                                    ? undefined
+                                    : new Date(courseCreateData.end_date)
+                                }
+                                maxDate={
+                                  !courseCreateData?.end_date
+                                    ? undefined
+                                    : new Date(courseCreateData.end_date)
+                                }
+                                placeholderText="Select start date..."
+                              />
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label
+                              htmlFor="end_date"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              End date<span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              <ReactDatePicker
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                selected={
+                                  !courseCreateData?.end_date
+                                    ? undefined
+                                    : new Date(courseCreateData.end_date)
+                                }
+                                onChange={(date: Date) => {
+                                  setCourseCreateData(
+                                    !courseCreateData
+                                      ? {
+                                          end_date: !date
+                                            ? undefined
+                                            : format(date, "yyyy-MM-dd"),
+                                        }
+                                      : {
+                                          ...courseCreateData,
+                                          end_date: !date
+                                            ? undefined
+                                            : format(date, "yyyy-MM-dd"),
+                                        }
+                                  );
+                                }}
+                                dateFormat={"dd MMM yyyy"}
+                                showIcon
+                                isClearable
+                                selectsEnd
+                                startDate={
+                                  !courseCreateData?.start_date
+                                    ? undefined
+                                    : new Date(courseCreateData.start_date)
+                                }
+                                endDate={
+                                  !courseCreateData?.end_date
+                                    ? undefined
+                                    : new Date(courseCreateData.end_date)
+                                }
+                                minDate={
+                                  !courseCreateData?.start_date
+                                    ? undefined
+                                    : new Date(courseCreateData.start_date)
+                                }
+                                placeholderText="Select end date..."
+                              />
+                            </div>
+                          </div>
+
+                          <div className="col-span-full">
+                            <label
+                              htmlFor="description"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Description
+                            </label>
+                            <div className="mt-2">
+                              <textarea
+                                name="description"
+                                rows={4}
+                                placeholder="About of this course..."
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setCourseCreateData(
+                                    !courseCreateData
+                                      ? { description: e.target.value }
+                                      : {
+                                          ...courseCreateData,
+                                          description: e.target.value,
+                                        }
+                                  );
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button
+                      type="button"
+                      className={classNames(
+                        !courseCreateData ||
+                          !courseCreateData.m_subject_id ||
+                          !courseCreateData.teacher_code_or_email ||
+                          !courseCreateData.start_date ||
+                          !courseCreateData.end_date
+                          ? "bg-gray-500 cursor-not-allowed"
+                          : "bg-green-600 hover:bg-green-500",
+                        "inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto"
+                      )}
+                      onClick={handleAddCourse}
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowDialogAddCourse(false);
                       }}
                     >
                       Cancel
