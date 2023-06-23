@@ -72,7 +72,7 @@ const SubjectAndCoursePage = () => {
         `${ATTENDANCE_API_DOMAIN}/admin/search-course`,
         {
           headers: {
-            authorization: `Bearer ${Cookies.get("access_token")}`,
+            authorization: `Bearer ${Cookies.get("admin_access_token")}`,
           },
         }
       );
@@ -87,7 +87,7 @@ const SubjectAndCoursePage = () => {
 
     const { data } = await axios.get(url, {
       headers: {
-        authorization: `Bearer ${Cookies.get("access_token")}`,
+        authorization: `Bearer ${Cookies.get("admin_access_token")}`,
       },
       params: {
         subjectId: !selectedSubject ? undefined : selectedSubject.id,
@@ -112,7 +112,7 @@ const SubjectAndCoursePage = () => {
         errors: string[];
       }>(`${ATTENDANCE_API_DOMAIN}/admin/upload-course-csv`, formData, {
         headers: {
-          authorization: `Bearer ${Cookies.get("access_token")}`,
+          authorization: `Bearer ${Cookies.get("admin_access_token")}`,
         },
       });
 
@@ -133,7 +133,7 @@ const SubjectAndCoursePage = () => {
 
     const { data } = await axios.post(url, courseCreateData, {
       headers: {
-        authorization: `Bearer ${Cookies.get("access_token")}`,
+        authorization: `Bearer ${Cookies.get("admin_access_token")}`,
       },
     });
     router.reload();

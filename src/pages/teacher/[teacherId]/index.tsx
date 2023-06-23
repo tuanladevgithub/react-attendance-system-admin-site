@@ -51,7 +51,7 @@ const TeacherDetailPage = () => {
           `${ATTENDANCE_API_DOMAIN}/admin/get-teacher-info/${teacherId}`,
           {
             headers: {
-              authorization: `Bearer ${Cookies.get("access_token")}`,
+              authorization: `Bearer ${Cookies.get("admin_access_token")}`,
             },
           }
         );
@@ -68,7 +68,7 @@ const TeacherDetailPage = () => {
         `${ATTENDANCE_API_DOMAIN}/admin/get-teacher-course/${teacherId}`,
         {
           headers: {
-            authorization: `Bearer ${Cookies.get("access_token")}`,
+            authorization: `Bearer ${Cookies.get("admin_access_token")}`,
           },
         }
       );
@@ -86,7 +86,7 @@ const TeacherDetailPage = () => {
         teacherUpdateData,
         {
           headers: {
-            authorization: `Bearer ${Cookies.get("access_token")}`,
+            authorization: `Bearer ${Cookies.get("admin_access_token")}`,
           },
         }
       );

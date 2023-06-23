@@ -261,7 +261,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                           // href="/sign-in"
                           onClick={(e) => {
                             e.preventDefault();
-                            Cookies.remove("access_token");
+                            Cookies.remove("admin_access_token");
                             router.reload();
                           }}
                           className={classNames(

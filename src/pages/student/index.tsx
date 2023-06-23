@@ -60,7 +60,7 @@ const StudentPage = () => {
         `${ATTENDANCE_API_DOMAIN}/admin/search-student`,
         {
           headers: {
-            authorization: `Bearer ${Cookies.get("access_token")}`,
+            authorization: `Bearer ${Cookies.get("admin_access_token")}`,
           },
         }
       );
@@ -75,7 +75,7 @@ const StudentPage = () => {
 
     const { data } = await axios.get(url, {
       headers: {
-        authorization: `Bearer ${Cookies.get("access_token")}`,
+        authorization: `Bearer ${Cookies.get("admin_access_token")}`,
       },
       params: {
         gender: selectedGender.value,
@@ -99,7 +99,7 @@ const StudentPage = () => {
         errors: string[];
       }>(`${ATTENDANCE_API_DOMAIN}/admin/upload-student-csv`, formData, {
         headers: {
-          authorization: `Bearer ${Cookies.get("access_token")}`,
+          authorization: `Bearer ${Cookies.get("admin_access_token")}`,
         },
       });
 
@@ -120,7 +120,7 @@ const StudentPage = () => {
 
     const { data } = await axios.post(url, studentCreateData, {
       headers: {
-        authorization: `Bearer ${Cookies.get("access_token")}`,
+        authorization: `Bearer ${Cookies.get("admin_access_token")}`,
       },
     });
     router.reload();

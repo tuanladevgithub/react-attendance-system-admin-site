@@ -7,7 +7,7 @@ const teacherFetcher = () =>
   axios
     .get(`${ATTENDANCE_API_DOMAIN}/admin/get-info`, {
       headers: {
-        authorization: `Bearer ${Cookies.get("access_token")}`,
+        authorization: `Bearer ${Cookies.get("admin_access_token")}`,
       },
     })
     .then((response) => response.data);

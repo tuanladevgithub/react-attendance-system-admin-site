@@ -64,7 +64,7 @@ const TeacherPage = () => {
         `${ATTENDANCE_API_DOMAIN}/admin/search-teacher`,
         {
           headers: {
-            authorization: `Bearer ${Cookies.get("access_token")}`,
+            authorization: `Bearer ${Cookies.get("admin_access_token")}`,
           },
         }
       );
@@ -79,7 +79,7 @@ const TeacherPage = () => {
 
     const { data } = await axios.get(url, {
       headers: {
-        authorization: `Bearer ${Cookies.get("access_token")}`,
+        authorization: `Bearer ${Cookies.get("admin_access_token")}`,
       },
       params: {
         departmentId: !selectedDepartment ? undefined : selectedDepartment.id,
@@ -104,7 +104,7 @@ const TeacherPage = () => {
         errors: string[];
       }>(`${ATTENDANCE_API_DOMAIN}/admin/upload-teacher-csv`, formData, {
         headers: {
-          authorization: `Bearer ${Cookies.get("access_token")}`,
+          authorization: `Bearer ${Cookies.get("admin_access_token")}`,
         },
       });
 
@@ -125,7 +125,7 @@ const TeacherPage = () => {
 
     const { data } = await axios.post(url, teacherCreateData, {
       headers: {
-        authorization: `Bearer ${Cookies.get("access_token")}`,
+        authorization: `Bearer ${Cookies.get("admin_access_token")}`,
       },
     });
     router.reload();
