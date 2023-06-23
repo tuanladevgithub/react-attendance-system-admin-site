@@ -327,7 +327,7 @@ const StudentPage = () => {
 
                           <td className="px-6">
                             <div className="flex items-center">
-                              <IdentificationIcon className="w-6 text-gray-500" />
+                              <IdentificationIcon className="w-5 text-gray-500" />
                               <p className="text-sm leading-none text-gray-600 ml-1">
                                 {student.student_code}
                               </p>
@@ -344,7 +344,7 @@ const StudentPage = () => {
 
                           <td className="px-6">
                             <div className="flex items-center">
-                              <EnvelopeIcon className="w-6 text-gray-500" />
+                              <EnvelopeIcon className="w-5 text-gray-500" />
                               <p className="text-sm leading-none text-gray-600 ml-1">
                                 {student.email}
                               </p>
@@ -361,7 +361,7 @@ const StudentPage = () => {
 
                           <td className="px-6">
                             <div className="flex items-center">
-                              <DevicePhoneMobileIcon className="w-6 text-gray-500" />
+                              <DevicePhoneMobileIcon className="w-5 text-gray-500" />
                               <p className="text-sm leading-none text-gray-600 ml-2">
                                 {student.phone_number ?? "..."}
                               </p>
