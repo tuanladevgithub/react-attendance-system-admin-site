@@ -728,7 +728,7 @@ const SubjectAndCoursePage = () => {
                                         }
                                   );
                                 }}
-                                dateFormat={"dd MMM yyyy"}
+                                dateFormat={"dd MMMM yyyy"}
                                 showIcon
                                 isClearable
                                 selectsStart
