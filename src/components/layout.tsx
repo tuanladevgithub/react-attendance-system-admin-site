@@ -77,33 +77,33 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       icon: courseIcon,
       isActive: router.pathname.startsWith("/subject-course"),
     },
-    {
-      id: 5,
-      type: "multi",
-      title: "Multi items",
-      path: "multi-item",
-      icon: settingIcon,
-      items: [
-        {
-          id: 1,
-          title: "Item 1",
-          path: "item1",
-          isActive: false,
-        },
-        {
-          id: 2,
-          title: "Item 2",
-          path: "item2",
-          isActive: false,
-        },
-        {
-          id: 3,
-          title: "Item 3",
-          path: "item3",
-          isActive: false,
-        },
-      ],
-    },
+    // {
+    //   id: 5,
+    //   type: "multi",
+    //   title: "Multi items",
+    //   path: "multi-item",
+    //   icon: settingIcon,
+    //   items: [
+    //     {
+    //       id: 1,
+    //       title: "Item 1",
+    //       path: "item1",
+    //       isActive: false,
+    //     },
+    //     {
+    //       id: 2,
+    //       title: "Item 2",
+    //       path: "item2",
+    //       isActive: false,
+    //     },
+    //     {
+    //       id: 3,
+    //       title: "Item 3",
+    //       path: "item3",
+    //       isActive: false,
+    //     },
+    //   ],
+    // },
     {
       id: 6,
       type: "single",
@@ -146,51 +146,51 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 );
               }
 
-              if (menuItem.type === "multi") {
-                return (
-                  <div key={menuItem.id} x-data="collapse()">
-                    <div
-                      className="flex items-center justify-between px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
-                      role="button"
-                      aria-controls={`collapseItem${menuItem.id}`}
-                      aria-expanded="false"
-                      x-spread="trigger"
-                    >
-                      <div className="flex items-center">
-                        <Image
-                          src={menuItem.icon}
-                          className="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
-                          alt={menuItem.title}
-                        />
-                        <span>{menuItem.title}</span>
-                      </div>
-                      <AlpineWidget />
-                    </div>
+              // if (menuItem.type === "multi") {
+              //   return (
+              //     <div key={menuItem.id} x-data="collapse()">
+              //       <div
+              //         className="flex items-center justify-between px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
+              //         role="button"
+              //         aria-controls={`collapseItem${menuItem.id}`}
+              //         aria-expanded="false"
+              //         x-spread="trigger"
+              //       >
+              //         <div className="flex items-center">
+              //           <Image
+              //             src={menuItem.icon}
+              //             className="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
+              //             alt={menuItem.title}
+              //           />
+              //           <span>{menuItem.title}</span>
+              //         </div>
+              //         <AlpineWidget />
+              //       </div>
 
-                    <div
-                      className="mb-4"
-                      id={`collapseItem${menuItem.id}`}
-                      x-spread="collapse"
-                      x-cloak="true"
-                    >
-                      {menuItem.items?.map((subMenuItem) => (
-                        <Link
-                          key={subMenuItem.id}
-                          className={classNames(
-                            "flex items-center py-2 pl-12 pr-4 transition cursor-pointer hover:bg-gray-800 hover:text-gray-200",
-                            subMenuItem.isActive
-                              ? "text-gray-200 bg-gray-800"
-                              : ""
-                          )}
-                          href={`/${menuItem.path}/${subMenuItem.path}`}
-                        >
-                          {subMenuItem.title}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                );
-              }
+              //       <div
+              //         className="mb-4"
+              //         id={`collapseItem${menuItem.id}`}
+              //         x-spread="collapse"
+              //         x-cloak="true"
+              //       >
+              //         {menuItem.items?.map((subMenuItem) => (
+              //           <Link
+              //             key={subMenuItem.id}
+              //             className={classNames(
+              //               "flex items-center py-2 pl-12 pr-4 transition cursor-pointer hover:bg-gray-800 hover:text-gray-200",
+              //               subMenuItem.isActive
+              //                 ? "text-gray-200 bg-gray-800"
+              //                 : ""
+              //             )}
+              //             href={`/${menuItem.path}/${subMenuItem.path}`}
+              //           >
+              //             {subMenuItem.title}
+              //           </Link>
+              //         ))}
+              //       </div>
+              //     </div>
+              //   );
+              // }
             })}
           </nav>
         </nav>

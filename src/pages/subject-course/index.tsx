@@ -25,6 +25,25 @@ import { Course } from "@/types/course.type";
 import ReactDatePicker from "react-datepicker";
 import { format } from "date-fns";
 
+const importTypes = [
+  {
+    id: 1,
+    title: "Import subjects",
+  },
+  {
+    id: 2,
+    title: "Import courses",
+  },
+  {
+    id: 3,
+    title: "Import course schedule",
+  },
+  {
+    id: 4,
+    title: "Import course participation",
+  },
+];
+
 const SubjectAndCoursePage = () => {
   const router = useRouter();
 
@@ -44,6 +63,7 @@ const SubjectAndCoursePage = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [showDialogImportCsv, setShowDialogImportCsv] =
     useState<boolean>(false);
+  const [importCsvType, setImportCsvType] = useState<number>();
   const [fileCsv, setFileCsv] = useState<File>();
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
@@ -98,19 +118,32 @@ const SubjectAndCoursePage = () => {
   };
 
   const handleImportCsv = async () => {
-    if (!fileCsv) return;
+    if (!importCsvType || !fileCsv) return;
+
     console.log(fileCsv);
     setIsUploading(true);
     await delay(2000);
     try {
       let formData = new FormData();
-
       formData.append("file", fileCsv);
+
+      let url = "";
+      if (importCsvType === 1)
+        url = `${ATTENDANCE_API_DOMAIN}/admin/upload-subject-csv`;
+
+      if (importCsvType === 2)
+        url = `${ATTENDANCE_API_DOMAIN}/admin/upload-course-csv`;
+
+      if (importCsvType === 3)
+        url = `${ATTENDANCE_API_DOMAIN}/admin/upload-course-schedule-csv`;
+
+      if (importCsvType === 4)
+        url = `${ATTENDANCE_API_DOMAIN}/admin/upload-course-participation-csv`;
 
       const { data } = await axios.post<{
         isSuccess: boolean;
         errors: string[];
-      }>(`${ATTENDANCE_API_DOMAIN}/admin/upload-course-csv`, formData, {
+      }>(url, formData, {
         headers: {
           authorization: `Bearer ${Cookies.get("admin_access_token")}`,
         },
@@ -405,6 +438,7 @@ const SubjectAndCoursePage = () => {
           className="relative z-10"
           onClose={() => {
             setShowDialogImportCsv(false);
+            setImportCsvType(undefined);
             setFileCsv(undefined);
           }}
         >
@@ -433,14 +467,14 @@ const SubjectAndCoursePage = () => {
               >
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                    <div className="sm:flex sm:items-start">
+                    <div className="flex">
                       <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
                         <ArrowUpTrayIcon
                           className="h-6 w-6 text-green-600"
                           aria-hidden="true"
                         />
                       </div>
-                      <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                      <div className="mt-3 w-full text-center sm:ml-4 sm:mt-0 sm:text-left">
                         <Dialog.Title
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
@@ -448,19 +482,54 @@ const SubjectAndCoursePage = () => {
                           Import CSV
                         </Dialog.Title>
                         <div className="mt-4 text-sm text-gray-500">
-                          <form className="flex items-center">
-                            <label className="block">
-                              <span className="sr-only">Choose csv file</span>
-                              <input
-                                type="file"
-                                className="block w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border file:border-green-600 file:border-dashed file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 file:cursor-pointer hover:file:bg-green-100 focus:outline-none"
-                                accept=".csv"
-                                onChange={(e) => {
-                                  if (e.target.files)
-                                    setFileCsv(e.target.files[0]);
-                                }}
-                              />
-                            </label>
+                          <form className="grid grid-cols-1 gap-x-4 gap-y-4">
+                            <div>
+                              <label
+                                htmlFor="import_type"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                Import type:
+                              </label>
+                              <div className="mt-2">
+                                <select
+                                  name="import_type"
+                                  onChange={(e) => {
+                                    e.preventDefault();
+                                    setImportCsvType(parseInt(e.target.value));
+                                  }}
+                                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6"
+                                >
+                                  <option disabled selected>
+                                    {"-- Select import type --"}
+                                  </option>
+                                  {importTypes.map((type) => (
+                                    <option key={type.id} value={type.id}>
+                                      {type.title}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor="choose_file"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                File:
+                              </label>
+                              <div className="mt-2">
+                                <input
+                                  type="file"
+                                  className="block w-full text-gray-900 file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border file:border-indigo-600 file:border-dashed file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 file:cursor-pointer hover:file:bg-indigo-100 focus:outline-none"
+                                  accept=".csv"
+                                  onChange={(e) => {
+                                    if (e.target.files)
+                                      setFileCsv(e.target.files[0]);
+                                  }}
+                                />
+                              </div>
+                            </div>
                           </form>
                         </div>
                       </div>
@@ -493,6 +562,7 @@ const SubjectAndCoursePage = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         setShowDialogImportCsv(false);
+                        setImportCsvType(undefined);
                         setFileCsv(undefined);
                       }}
                     >
@@ -573,6 +643,7 @@ const SubjectAndCoursePage = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         setShowDialogImportCsv(false);
+                        setImportCsvType(undefined);
                         setFileCsv(undefined);
                         setUploadErrors([]);
                       }}
