@@ -7,7 +7,6 @@ import {
   ChevronUpDownIcon,
   FaceFrownIcon,
   MagnifyingGlassIcon,
-  UsersIcon,
 } from "@heroicons/react/24/solid";
 import { Fragment, useEffect, useState } from "react";
 import { classNames } from "@/utils/class-name-util";
@@ -24,6 +23,13 @@ import Link from "next/link";
 import { Course } from "@/types/course.type";
 import ReactDatePicker from "react-datepicker";
 import { format } from "date-fns";
+import {
+  AcademicCapIcon,
+  EllipsisHorizontalCircleIcon,
+  EnvelopeIcon,
+  IdentificationIcon,
+  UsersIcon,
+} from "@heroicons/react/24/outline";
 
 const importTypes = [
   {
@@ -385,45 +391,146 @@ const SubjectAndCoursePage = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="mx-auto my-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 xl:gap-x-8">
-                    {courses.map((course) => (
-                      <div key={course.id} className="group relative">
-                        <div className="bg-slate-50 w-full border-solid border rounded-lg shadow-lg">
-                          <div className="aspect-h-1 aspect-w-2 w-full overflow-hidden rounded-t-lg bg-gray-200">
-                            <Image
-                              src={courseImg}
-                              alt={`${course.subject?.subject_code} - ${course.course_code}`}
-                              className="h-full w-full object-cover object-center group-hover:opacity-75"
+                  <div className="mt-7 overflow-x-auto">
+                    <table className="w-full whitespace-nowrap text-left">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                          {/* <th className="p-4">
+                        <label
+                          htmlFor="checkbox-all-search"
+                          className="sr-only"
+                        >
+                          checkbox
+                        </label>
+                      </th> */}
+
+                          <th className="px-6 py-3">Course code</th>
+
+                          <th className="px-6 py-3">Subject</th>
+
+                          <th className="px-6 py-3">Teacher</th>
+
+                          <th className="px-6 py-3">Students</th>
+
+                          <th className="px-6 py-3"></th>
+
+                          <th className="px-6 py-3"></th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {courses.map((course) => (
+                          <tr
+                            key={course.id}
+                            tabIndex={0}
+                            className="focus:outline-none h-16 border border-gray-100 rounded hover:bg-gray-100"
+                          >
+                            {/* <td className="pl-4">
+                        <div className="ml-5">
+                          <div className="bg-gray-200 rounded-sm w-5 h-5 flex flex-shrink-0 justify-center items-center relative">
+                            <input
+                              placeholder="checkbox"
+                              type="checkbox"
+                              className="focus:opacity-100 checkbox opacity-0 absolute cursor-pointer w-full h-full"
                             />
-                          </div>
-                          <div className="my-1 px-2 flex justify-between">
-                            <div>
-                              <h3 className="text-base text-blue-500">
-                                <Link href={`/course/${course.id}/session`}>
-                                  <span
-                                    aria-hidden="true"
-                                    className="absolute inset-0"
-                                  />
-                                  {course.subject?.subject_name}
-                                </Link>
-                              </h3>
-                              <p className="mt-1 text-sm text-gray-500">
-                                {`${course.subject?.subject_code} - ${course.course_code}`}
-                              </p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center text-sm font-medium text-gray-700">
-                              <div className="mx-1">
-                                <UsersIcon
-                                  className="h-5 w-5"
-                                  aria-hidden="true"
-                                />
-                              </div>
-                              <p>{course.countStudents}</p>
+                            <div className="check-icon hidden bg-indigo-700 text-white rounded-sm">
+                              <svg
+                                className="icon icon-tabler icon-tabler-check"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                                fill="none"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              >
+                                <path stroke="none" d="M0 0h24v24H0z"></path>
+                                <path d="M5 12l5 5l10 -10"></path>
+                              </svg>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      </td> */}
+
+                            <td className="px-6 focus:text-indigo-600">
+                              <div className="flex items-center">
+                                <p className="text-sm leading-none text-gray-700">
+                                  {course.course_code}
+                                </p>
+                              </div>
+                            </td>
+
+                            <td className="px-6">
+                              <div className="flex items-center">
+                                <AcademicCapIcon className="w-6 text-gray-500" />
+                                <p className="text-sm leading-none text-gray-600 ml-1">
+                                  {course.subject?.subject_code} -{" "}
+                                  {course.subject?.subject_name}
+                                </p>
+                              </div>
+                            </td>
+
+                            <td className="px-6">
+                              <div className="flex items-center">
+                                <p className="text-sm leading-none text-gray-600 ml-1">
+                                  {course.teacher?.last_name}{" "}
+                                  {course.teacher?.first_name}
+                                </p>
+                              </div>
+                            </td>
+
+                            <td className="px-6">
+                              <div className="flex items-center">
+                                <UsersIcon className="w-6 text-gray-500" />
+                                <p className="text-sm leading-none text-gray-600 ml-1">
+                                  {course.countStudents}
+                                </p>
+                              </div>
+                            </td>
+
+                            <td className="px-6">
+                              <button
+                                onClick={(e) => e.preventDefault()}
+                                className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none"
+                              >
+                                <Link href={`/course/${course.id}`}>View</Link>
+                              </button>
+                            </td>
+
+                            <td className="px-6">
+                              <div className="relative px-5 pt-2">
+                                <button
+                                  className="rounded-md focus:outline-none"
+                                  onClick={() => console.log("Add task")}
+                                  role="button"
+                                  aria-label="option"
+                                >
+                                  <EllipsisHorizontalCircleIcon className="w-6 text-gray-500" />
+                                </button>
+
+                                <div className="dropdown-content bg-white shadow w-24 absolute z-30 right-0 mr-6 hidden">
+                                  <div
+                                    tabIndex={0}
+                                    className="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
+                                  >
+                                    <p>Edit</p>
+                                  </div>
+                                  <div
+                                    tabIndex={0}
+                                    className="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
+                                  >
+                                    <p>Delete</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                        <tr className="h-3"></tr>
+                      </tbody>
+                    </table>
                   </div>
                 )}
               </div>
@@ -616,14 +723,14 @@ const SubjectAndCoursePage = () => {
                           aria-hidden="true"
                         />
                       </div>
-                      <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                      <div className="mt-3 w-full text-center sm:ml-4 sm:mt-0 sm:text-left">
                         <Dialog.Title
                           as="h3"
                           className="text-base font-semibold leading-6 text-red-600"
                         >
                           Import failed, please check your CSV file!
                         </Dialog.Title>
-                        <div className="mt-4 text-sm text-gray-500">
+                        <div className="mt-4 text-sm text-gray-500 w-full max-h-56 overflow-y-auto">
                           <ul
                             role="list"
                             className="marker:text-black list-disc pl-5 space-y-3 text-slate-500"

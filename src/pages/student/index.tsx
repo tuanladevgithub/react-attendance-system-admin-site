@@ -294,7 +294,7 @@ const StudentPage = () => {
                         <tr
                           key={student.id}
                           tabIndex={0}
-                          className="focus:outline-none h-16 border border-gray-100 rounded"
+                          className="focus:outline-none h-16 border border-gray-100 rounded hover:bg-gray-100"
                         >
                           {/* <td className="pl-4">
                         <div className="ml-5">

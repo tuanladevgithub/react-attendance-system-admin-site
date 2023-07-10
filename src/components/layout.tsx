@@ -73,9 +73,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       id: 4,
       type: "single",
       title: "Subjects & courses",
-      path: "subject-course",
+      path: "course",
       icon: courseIcon,
-      isActive: router.pathname.startsWith("/subject-course"),
+      isActive: router.pathname.startsWith("/course"),
     },
     // {
     //   id: 5,
