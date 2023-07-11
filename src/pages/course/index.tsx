@@ -16,7 +16,6 @@ import axios from "axios";
 import { ATTENDANCE_API_DOMAIN } from "@/constants/axios-constant";
 import spinnerImg from "../../../public/oval.svg";
 import emptyDataImg from "../../../public/empty-data.svg";
-import courseImg from "../../../public/course-img.jpg";
 import { delay } from "@/utils/delay-util";
 import Cookies from "js-cookie";
 import Link from "next/link";
@@ -26,8 +25,6 @@ import { format } from "date-fns";
 import {
   AcademicCapIcon,
   EllipsisHorizontalCircleIcon,
-  EnvelopeIcon,
-  IdentificationIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
 
@@ -474,10 +471,12 @@ const SubjectAndCoursePage = () => {
 
                             <td className="px-6">
                               <div className="flex items-center">
-                                <p className="text-sm leading-none text-gray-600 ml-1">
-                                  {course.teacher?.last_name}{" "}
-                                  {course.teacher?.first_name}
-                                </p>
+                                <Link href={`/teacher/${course.teacher?.id}`}>
+                                  <p className="text-sm leading-none text-sky-500 ml-1 hover:underline">
+                                    {course.teacher?.last_name}{" "}
+                                    {course.teacher?.first_name}
+                                  </p>
+                                </Link>
                               </div>
                             </td>
 
@@ -907,8 +906,6 @@ const SubjectAndCoursePage = () => {
                                   );
                                 }}
                                 dateFormat={"dd MMMM yyyy"}
-                                showIcon
-                                isClearable
                                 selectsStart
                                 startDate={
                                   !courseCreateData?.start_date
@@ -939,7 +936,7 @@ const SubjectAndCoursePage = () => {
                             </label>
                             <div className="mt-2">
                               <ReactDatePicker
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                className="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 selected={
                                   !courseCreateData?.end_date
                                     ? undefined
@@ -961,9 +958,7 @@ const SubjectAndCoursePage = () => {
                                         }
                                   );
                                 }}
-                                dateFormat={"dd MMM yyyy"}
-                                showIcon
-                                isClearable
+                                dateFormat={"dd MMMM yyyy"}
                                 selectsEnd
                                 startDate={
                                   !courseCreateData?.start_date

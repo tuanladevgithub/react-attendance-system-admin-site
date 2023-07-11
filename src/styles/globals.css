@@ -20,3 +20,7 @@ body {
   color: rgb(var(--foreground-rgb));
   background: #dce3e9;
 }
+
+.customDatePickerWidth > div.react-datepicker-wrapper {
+  width: 100%;
+}
