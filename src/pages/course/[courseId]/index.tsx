@@ -5,15 +5,16 @@ import { Course, CourseSchedule } from "@/types/course.type";
 import { Subject } from "@/types/subject.type";
 import { classNames } from "@/utils/class-name-util";
 import { formatTimeDisplay24Hours } from "@/utils/date-time-util";
-import { Listbox, Transition } from "@headlessui/react";
+import { Dialog, Listbox, Transition } from "@headlessui/react";
 import {
   CalendarDaysIcon,
   ChevronUpDownIcon,
   ClockIcon,
+  ExclamationTriangleIcon,
   PlusIcon,
   TrashIcon,
 } from "@heroicons/react/24/solid";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { format } from "date-fns";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
@@ -47,6 +48,7 @@ const CourseDetailPage = () => {
     end_hour: number;
     end_min: number;
   }>({ start_hour: 8, start_min: 0, end_hour: 9, end_min: 0 });
+  const [addScheduleError, setAddScheduleError] = useState<string>();
 
   useEffect(() => {
     const fetchListOfSubjects = async () => {
@@ -136,6 +138,62 @@ const CourseDetailPage = () => {
         updateCourse();
       }
     }
+  };
+
+  const handleAddNewSchedule = () => {
+    const addNewSchedule = async () => {
+      try {
+        await axios.post<CourseSchedule>(
+          `${ATTENDANCE_API_DOMAIN}/admin/course/${courseId}/add-schedule`,
+          {
+            day_of_week: addScheduleDayOfWeek,
+            ...addScheduleTime,
+          },
+          {
+            headers: {
+              authorization: `Bearer ${Cookies.get("admin_access_token")}`,
+            },
+          }
+        );
+
+        router.reload();
+      } catch (error: any) {
+        const { response } = error as AxiosError<{
+          error: string;
+          message: string;
+          statusCode: number;
+        }>;
+
+        if (response?.status === 400)
+          setAddScheduleError(response.data.message);
+      }
+    };
+
+    if (course && updateCourseData) {
+      if (addScheduleDayOfWeek) {
+        addNewSchedule();
+      }
+    }
+  };
+
+  const handleDeleteSchedule = (scheduleId: number) => {
+    const deleteSchedule = async () => {
+      await axios.post(
+        `${ATTENDANCE_API_DOMAIN}/admin/course/${courseId}/delete-schedule`,
+        {
+          scheduleId,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${Cookies.get("admin_access_token")}`,
+          },
+        }
+      );
+
+      router.reload();
+    };
+
+    if (course) deleteSchedule();
   };
 
   return (
@@ -377,7 +435,14 @@ const CourseDetailPage = () => {
                                                 schedule.end_min
                                               )}
                                             </span>
-                                            <div className="h-4 w-4 ml-10 cursor-pointer hover:text-red-500">
+                                            <div
+                                              onClick={() =>
+                                                handleDeleteSchedule(
+                                                  schedule.id
+                                                )
+                                              }
+                                              className="h-4 w-4 ml-10 cursor-pointer hover:text-red-500"
+                                            >
                                               <TrashIcon />
                                             </div>
                                           </div>
@@ -733,6 +798,7 @@ const CourseDetailPage = () => {
                                 onClick={(e) => {
                                   e.preventDefault();
                                   setOpenFormAddSchedule(false);
+                                  setAddScheduleDayOfWeek(undefined);
                                 }}
                               >
                                 Cancel
@@ -741,16 +807,12 @@ const CourseDetailPage = () => {
                               <button
                                 type="button"
                                 className={classNames(
-                                  // !studentCreateData ||
-                                  //   !studentCreateData.first_name ||
-                                  //   !studentCreateData.last_name ||
-                                  //   !studentCreateData.email ||
-                                  //   !studentCreateData.gender
-                                  //   ? "bg-gray-500 cursor-not-allowed"
-                                  //   :
-                                  "bg-green-600 hover:bg-green-500",
+                                  !addScheduleDayOfWeek
+                                    ? "bg-gray-500 cursor-not-allowed"
+                                    : "bg-green-600 hover:bg-green-500",
                                   "inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto"
                                 )}
+                                onClick={handleAddNewSchedule}
                               >
                                 Save
                               </button>
@@ -766,6 +828,78 @@ const CourseDetailPage = () => {
           </div>
         )}
       </Layout>
+
+      <Transition.Root show={!!addScheduleError} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => {
+            setAddScheduleError(undefined);
+          }}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <ExclamationTriangleIcon
+                          className="h-6 w-6 text-red-600"
+                          aria-hidden="true"
+                        />
+                      </div>
+                      <div className="mt-3 w-full text-center sm:ml-4 sm:mt-0 sm:text-left">
+                        <Dialog.Title
+                          as="h3"
+                          className="text-base font-semibold leading-6 text-red-600"
+                        >
+                          Add schedule fail!
+                        </Dialog.Title>
+                        <div className="mt-4 text-sm text-gray-500 w-full max-h-56 overflow-y-auto">
+                          {addScheduleError}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setAddScheduleError(undefined);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
     </>
   );
 };
