@@ -2,6 +2,7 @@ import Layout from "@/components/layout";
 import { ATTENDANCE_API_DOMAIN } from "@/constants/axios-constant";
 import { LIST_HOURS, LIST_MINS } from "@/constants/common-constant";
 import { Course, CourseSchedule } from "@/types/course.type";
+import { Student } from "@/types/student-type";
 import { Subject } from "@/types/subject.type";
 import { classNames } from "@/utils/class-name-util";
 import { formatTimeDisplay24Hours } from "@/utils/date-time-util";
@@ -10,7 +11,12 @@ import {
   CalendarDaysIcon,
   ChevronUpDownIcon,
   ClockIcon,
+  DevicePhoneMobileIcon,
+  EllipsisHorizontalCircleIcon,
+  EnvelopeIcon,
   ExclamationTriangleIcon,
+  IdentificationIcon,
+  MagnifyingGlassIcon,
   PlusIcon,
   TrashIcon,
 } from "@heroicons/react/24/solid";
@@ -36,6 +42,7 @@ const CourseDetailPage = () => {
     end_date: string;
     description?: string;
   }>();
+
   const [schedulesByDayOfWeek, setSchedulesByDayOfWeek] = useState<
     { dayOfWeek: string; schedules: CourseSchedule[] }[]
   >([]);
@@ -49,6 +56,9 @@ const CourseDetailPage = () => {
     end_min: number;
   }>({ start_hour: 8, start_min: 0, end_hour: 9, end_min: 0 });
   const [addScheduleError, setAddScheduleError] = useState<string>();
+
+  const [searchText, setSearchText] = useState<string | undefined>(undefined);
+  const [students, setStudents] = useState<Student[]>([]);
 
   useEffect(() => {
     const fetchListOfSubjects = async () => {
@@ -209,7 +219,7 @@ const CourseDetailPage = () => {
             </div>
 
             <div className="course-detail-group h-full overflow-hidden flex items-center justify-center">
-              <div className="sm:px-6 w-full">
+              <div className="sm:px-6 w-full divide-y">
                 <div className="py-4 md:py-7 px-4 md:px-8 xl:px-10">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     <div>
@@ -821,6 +831,206 @@ const CourseDetailPage = () => {
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div className="py-4 md:py-7 px-4 md:px-8 xl:px-10">
+                  <div className="sm:flex items-center justify-between">
+                    <div className="flex items-center gap-x-2">
+                      <div className="relative rounded-md shadow-sm">
+                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-1">
+                          <MagnifyingGlassIcon className="text-gray-500 h-5 w-5" />
+                        </div>
+                        <input
+                          type="text"
+                          value={searchText}
+                          onChange={(e) => setSearchText(e.target.value)}
+                          className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                          placeholder="Search text..."
+                        />
+                      </div>
+
+                      <button
+                        // onClick={handleSearchStudent}
+                        className="inline-flex items-start justify-start px-6 py-3 bg-green-600 hover:bg-green-500 focus:outline-none rounded"
+                      >
+                        <p className="text-sm font-medium leading-none text-white">
+                          Search
+                        </p>
+                      </button>
+                    </div>
+
+                    <div className="flex items-center">
+                      <button
+                        // onClick={(e) => {
+                        //   e.preventDefault();
+                        //   setShowDialogAddStudent(true);
+                        // }}
+                        className="inline-flex items-start justify-start px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded"
+                      >
+                        <p className="text-sm font-medium leading-none text-white">
+                          Add student to course
+                        </p>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-7 overflow-x-auto">
+                    <table className="w-full whitespace-nowrap text-left">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                          {/* <th className="p-4">
+                        <label
+                          htmlFor="checkbox-all-search"
+                          className="sr-only"
+                        >
+                          checkbox
+                        </label>
+                      </th> */}
+
+                          <th className="px-6 py-3">Code</th>
+
+                          <th className="px-6 py-3">Name</th>
+
+                          <th className="px-6 py-3">Email address</th>
+
+                          <th className="px-6 py-3">Gender</th>
+
+                          <th className="px-6 py-3">Phone number</th>
+
+                          <th className="px-6 py-3">Age</th>
+
+                          <th className="px-6 py-3"></th>
+
+                          <th className="px-6 py-3"></th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {students.map((student) => (
+                          <tr
+                            key={student.id}
+                            tabIndex={0}
+                            className="focus:outline-none h-16 border border-gray-100 rounded hover:bg-gray-100"
+                          >
+                            {/* <td className="pl-4">
+                        <div className="ml-5">
+                          <div className="bg-gray-200 rounded-sm w-5 h-5 flex flex-shrink-0 justify-center items-center relative">
+                            <input
+                              placeholder="checkbox"
+                              type="checkbox"
+                              className="focus:opacity-100 checkbox opacity-0 absolute cursor-pointer w-full h-full"
+                            />
+                            <div className="check-icon hidden bg-indigo-700 text-white rounded-sm">
+                              <svg
+                                className="icon icon-tabler icon-tabler-check"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                                fill="none"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              >
+                                <path stroke="none" d="M0 0h24v24H0z"></path>
+                                <path d="M5 12l5 5l10 -10"></path>
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </td> */}
+
+                            <td className="px-6">
+                              <div className="flex items-center">
+                                <IdentificationIcon className="w-5 text-gray-500" />
+                                <p className="text-sm leading-none text-gray-600 ml-1">
+                                  {student.student_code}
+                                </p>
+                              </div>
+                            </td>
+
+                            <td className="px-6 focus:text-indigo-600">
+                              <div className="flex items-center">
+                                <p className="text-sm leading-none text-gray-700">
+                                  {`${student.last_name} ${student.first_name}`}
+                                </p>
+                              </div>
+                            </td>
+
+                            <td className="px-6">
+                              <div className="flex items-center">
+                                <EnvelopeIcon className="w-5 text-gray-500" />
+                                <p className="text-sm leading-none text-gray-600 ml-1">
+                                  {student.email}
+                                </p>
+                              </div>
+                            </td>
+
+                            <td className="px-6">
+                              <div className="flex items-center">
+                                <p className="text-sm leading-none text-gray-600 ml-1">
+                                  {student.gender}
+                                </p>
+                              </div>
+                            </td>
+
+                            <td className="px-6">
+                              <div className="flex items-center">
+                                <DevicePhoneMobileIcon className="w-5 text-gray-500" />
+                                <p className="text-sm leading-none text-gray-600 ml-2">
+                                  {student.phone_number ?? "..."}
+                                </p>
+                              </div>
+                            </td>
+
+                            <td className="px-6">
+                              <div className="flex items-center">
+                                <p className="text-sm leading-none text-gray-600 ml-1">
+                                  {student.age ?? "..."}
+                                </p>
+                              </div>
+                            </td>
+
+                            <td className="px-6">
+                              <button className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none">
+                                View
+                              </button>
+                            </td>
+
+                            <td className="px-6">
+                              <div className="relative px-5 pt-2">
+                                <button
+                                  className="rounded-md focus:outline-none"
+                                  onClick={() => console.log("Add task")}
+                                  role="button"
+                                  aria-label="option"
+                                >
+                                  <EllipsisHorizontalCircleIcon className="w-6 text-gray-500" />
+                                </button>
+
+                                <div className="dropdown-content bg-white shadow w-24 absolute z-30 right-0 mr-6 hidden">
+                                  <div
+                                    tabIndex={0}
+                                    className="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
+                                  >
+                                    <p>Edit</p>
+                                  </div>
+                                  <div
+                                    tabIndex={0}
+                                    className="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
+                                  >
+                                    <p>Delete</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                        <tr className="h-3"></tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>

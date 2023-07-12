@@ -14,10 +14,8 @@ import {
 import { Dialog, Listbox, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { classNames } from "@/utils/class-name-util";
-import { Department } from "@/types/department.type";
 import axios from "axios";
 import { ATTENDANCE_API_DOMAIN } from "@/constants/axios-constant";
-import { Teacher } from "@/types/teacher.type";
 import Cookies from "js-cookie";
 import { delay } from "@/utils/delay-util";
 import Image from "next/image";
