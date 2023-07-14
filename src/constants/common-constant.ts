@@ -98,4 +98,4 @@ export const LIST_DAYS_OF_WEEK = [
   "Sunday",
 ];
 
-export const STUDENT_SITE_DOMAIN = "http://192.168.112.105:4003";
+export const STUDENT_SITE_DOMAIN = "https://student.aeit.club";

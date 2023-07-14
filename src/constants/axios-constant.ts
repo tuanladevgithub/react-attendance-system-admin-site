@@ -1,1 +1,1 @@
-export const ATTENDANCE_API_DOMAIN = "http://192.168.112.105:4444";
+export const ATTENDANCE_API_DOMAIN = "https://sysapi.aeit.club";
