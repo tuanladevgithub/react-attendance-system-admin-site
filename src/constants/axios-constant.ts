@@ -1,1 +1,1 @@
-export const ATTENDANCE_API_DOMAIN = "https://sysapi.aeit.club";
+export const ATTENDANCE_API_DOMAIN = "http://localhost:4444";
