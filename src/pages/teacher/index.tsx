@@ -316,7 +316,7 @@ const TeacherPage = () => {
 
                         <th className="px-6 py-3"></th>
 
-                        <th className="px-6 py-3"></th>
+                        {/* <th className="px-6 py-3"></th> */}
                       </tr>
                     </thead>
 
@@ -408,7 +408,7 @@ const TeacherPage = () => {
                             </button>
                           </td>
 
-                          <td className="px-6">
+                          {/* <td className="px-6">
                             <div className="relative px-5 pt-2">
                               <button
                                 className="rounded-md focus:outline-none"
@@ -434,7 +434,7 @@ const TeacherPage = () => {
                                 </div>
                               </div>
                             </div>
-                          </td>
+                          </td> */}
                         </tr>
                       ))}
                       <tr className="h-3"></tr>
