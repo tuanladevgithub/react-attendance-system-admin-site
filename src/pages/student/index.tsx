@@ -22,6 +22,7 @@ import Image from "next/image";
 import spinnerImg from "../../../public/oval.svg";
 import { useRouter } from "next/router";
 import { Student } from "@/types/student-type";
+import Link from "next/link";
 
 const genders = [
   { id: 1, title: "All genders", value: undefined },
@@ -283,7 +284,7 @@ const StudentPage = () => {
 
                         <th className="px-6 py-3"></th>
 
-                        <th className="px-6 py-3"></th>
+                        {/* <th className="px-6 py-3"></th> */}
                       </tr>
                     </thead>
 
@@ -375,12 +376,15 @@ const StudentPage = () => {
                           </td>
 
                           <td className="px-6">
-                            <button className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none">
+                            <Link
+                              href={`/student/${student.id}`}
+                              className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none"
+                            >
                               View
-                            </button>
+                            </Link>
                           </td>
 
-                          <td className="px-6">
+                          {/* <td className="px-6">
                             <div className="relative px-5 pt-2">
                               <button
                                 className="rounded-md focus:outline-none"
@@ -406,7 +410,7 @@ const StudentPage = () => {
                                 </div>
                               </div>
                             </div>
-                          </td>
+                          </td> */}
                         </tr>
                       ))}
                       <tr className="h-3"></tr>

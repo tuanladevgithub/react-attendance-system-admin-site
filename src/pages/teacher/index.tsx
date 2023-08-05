@@ -400,12 +400,12 @@ const TeacherPage = () => {
                           </td>
 
                           <td className="px-6">
-                            <button
-                              onClick={(e) => e.preventDefault()}
+                            <Link
+                              href={`/teacher/${teacher.id}`}
                               className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none"
                             >
-                              <Link href={`/teacher/${teacher.id}`}>View</Link>
-                            </button>
+                              View
+                            </Link>
                           </td>
 
                           {/* <td className="px-6">
