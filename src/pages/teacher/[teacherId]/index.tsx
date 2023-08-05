@@ -82,7 +82,7 @@ const TeacherDetailPage = () => {
       setCourses(data);
     };
 
-    fetchListOfTeacherCourses();
+    if (teacherId) fetchListOfTeacherCourses();
   }, [teacherId]);
 
   const handleUpdateTeacherInfo = async () => {
