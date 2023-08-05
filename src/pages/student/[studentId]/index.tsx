@@ -71,7 +71,7 @@ const StudentDetailPage = () => {
       setCourses(data);
     };
 
-    fetchListOfStudentCourses();
+    if (studentId) fetchListOfStudentCourses();
   }, [studentId]);
 
   const handleUpdateStudentInfo = async () => {
@@ -381,11 +381,11 @@ const StudentDetailPage = () => {
                             type="button"
                             disabled={
                               !firstNameUpdate &&
-                              !lastNameUpdate &&
-                              !emailUpdate &&
-                              phoneNumberUpdate === undefined &&
-                              !genderUpdate &&
-                              ageUpdate === undefined
+                                !lastNameUpdate &&
+                                !emailUpdate &&
+                                phoneNumberUpdate === undefined &&
+                                !genderUpdate &&
+                                ageUpdate === undefined
                                 ? true
                                 : false
                             }
