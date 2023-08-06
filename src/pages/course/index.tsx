@@ -411,7 +411,7 @@ const SubjectAndCoursePage = () => {
 
                           <th className="px-6 py-3"></th>
 
-                          <th className="px-6 py-3"></th>
+                          {/* <th className="px-6 py-3"></th> */}
                         </tr>
                       </thead>
 
@@ -490,15 +490,15 @@ const SubjectAndCoursePage = () => {
                             </td>
 
                             <td className="px-6">
-                              <button
-                                onClick={(e) => e.preventDefault()}
+                              <Link
+                                href={`/course/${course.id}`}
                                 className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none"
                               >
-                                <Link href={`/course/${course.id}`}>View</Link>
-                              </button>
+                                View
+                              </Link>
                             </td>
 
-                            <td className="px-6">
+                            {/* <td className="px-6">
                               <div className="relative px-5 pt-2">
                                 <button
                                   className="rounded-md focus:outline-none"
@@ -524,7 +524,7 @@ const SubjectAndCoursePage = () => {
                                   </div>
                                 </div>
                               </div>
-                            </td>
+                            </td> */}
                           </tr>
                         ))}
                         <tr className="h-3"></tr>

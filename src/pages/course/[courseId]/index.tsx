@@ -12,7 +12,6 @@ import {
   ChevronUpDownIcon,
   ClockIcon,
   DevicePhoneMobileIcon,
-  EllipsisHorizontalCircleIcon,
   EnvelopeIcon,
   ExclamationTriangleIcon,
   IdentificationIcon,
@@ -23,6 +22,7 @@ import {
 import axios, { AxiosError } from "axios";
 import { format } from "date-fns";
 import Cookies from "js-cookie";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
 import ReactDatePicker from "react-datepicker";
@@ -57,8 +57,14 @@ const CourseDetailPage = () => {
   }>({ start_hour: 8, start_min: 0, end_hour: 9, end_min: 0 });
   const [addScheduleError, setAddScheduleError] = useState<string>();
 
-  const [searchText, setSearchText] = useState<string | undefined>(undefined);
+  const [searchText, setSearchText] = useState<string>();
   const [students, setStudents] = useState<Student[]>([]);
+  const [showDialogAddStudentToCourse, setShowDialogAddStudentToCourse] =
+    useState<boolean>(false);
+  const [studentCodeOrEmail, setStudentCodeOrEmail] = useState<string>();
+  const [addStudentToCourseError, setAddStudentToCourseError] =
+    useState<string>();
+  const [deleteStudentId, setDeleteStudentId] = useState<number>();
 
   useEffect(() => {
     const fetchListOfSubjects = async () => {
@@ -120,6 +126,23 @@ const CourseDetailPage = () => {
     };
 
     if (courseId) fetchCourseData();
+  }, [courseId]);
+
+  useEffect(() => {
+    const fetchListStudent = async () => {
+      const { data } = await axios.get<Student[]>(
+        `${ATTENDANCE_API_DOMAIN}/admin/course/${courseId}/student`,
+        {
+          headers: {
+            authorization: `Bearer ${Cookies.get("admin_access_token")}`,
+          },
+        }
+      );
+
+      setStudents(data);
+    };
+
+    if (courseId) fetchListStudent();
   }, [courseId]);
 
   const handleUpdateCourse = () => {
@@ -206,21 +229,82 @@ const CourseDetailPage = () => {
     if (course) deleteSchedule();
   };
 
+  const handleSearchStudent = async () => {
+    const { data } = await axios.get<Student[]>(
+      `${ATTENDANCE_API_DOMAIN}/admin/course/${courseId}/student`,
+      {
+        headers: {
+          authorization: `Bearer ${Cookies.get("admin_access_token")}`,
+        },
+        params: {
+          search: searchText,
+        },
+      }
+    );
+
+    setStudents(data);
+  };
+
+  const handleAddStudentToCourse = async () => {
+    if (!studentCodeOrEmail) return;
+    try {
+      await axios.post<Student>(
+        `${ATTENDANCE_API_DOMAIN}/admin/course/${courseId}/add-student`,
+        {
+          studentCodeOrEmail,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${Cookies.get("admin_access_token")}`,
+          },
+        }
+      );
+
+      router.reload();
+    } catch (error: any) {
+      const { response } = error as AxiosError<{
+        error: string;
+        message: string;
+        statusCode: number;
+      }>;
+
+      if (response?.status === 400)
+        setAddStudentToCourseError(response.data.message);
+    }
+  };
+
+  const handleDeleteStudentFromCourse = () => {
+    const deleteStudent = async () => {
+      await axios.delete(
+        `${ATTENDANCE_API_DOMAIN}/admin/course/${courseId}/student/${deleteStudentId}`,
+        {
+          headers: {
+            authorization: `Bearer ${Cookies.get("admin_access_token")}`,
+          },
+        }
+      );
+
+      router.reload();
+    };
+
+    if (course && deleteStudentId) deleteStudent();
+  };
+
   return (
     <>
       <Layout>
         {course && updateCourseData && (
-          <div className="bg-white rounded-lg shadow-xl">
-            <div className="header-group w-full px-10 py-5">
-              <h1 className="text-xl font-semibold text-gray-900">
-                Subject & course management
-              </h1>
-              <span className="text-sm text-gray-600">*Course detail.</span>
-            </div>
+          <>
+            <div className="border border-slate-200 bg-white rounded-lg shadow-xl">
+              <div className="header-group w-full px-10 py-5">
+                <h1 className="text-xl font-semibold text-gray-900">
+                  Course management
+                </h1>
+                <span className="text-sm text-gray-600">*Course detail.</span>
+              </div>
 
-            <div className="course-detail-group h-full overflow-hidden flex items-center justify-center">
-              <div className="sm:px-6 w-full divide-y">
-                <div className="py-4 md:py-7 px-4 md:px-8 xl:px-10">
+              <div className="w-full px-10 py-5">
+                <div className="w-full">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     <div>
                       <form>
@@ -287,7 +371,8 @@ const CourseDetailPage = () => {
                               htmlFor="start_date"
                               className="block text-sm font-medium leading-6 text-gray-900"
                             >
-                              Start date<span className="text-red-500">*</span>
+                              Start date
+                              <span className="text-red-500">*</span>
                             </label>
                             <div className="mt-2">
                               <div className="customDatePickerWidth">
@@ -833,8 +918,21 @@ const CourseDetailPage = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <div className="py-4 md:py-7 px-4 md:px-8 xl:px-10">
+            <div className="mt-8 border border-slate-200 bg-white rounded-lg shadow-xl">
+              <div className="header-group w-full px-10 py-5">
+                <h1 className="text-xl font-semibold text-gray-900">
+                  List of students
+                </h1>
+                <span className="text-sm text-gray-600">
+                  *The list of students of this course.
+                </span>
+              </div>
+
+              <div className="w-full px-10 py-5">
+                <div className="w-full">
                   <div className="sm:flex items-center justify-between">
                     <div className="flex items-center gap-x-2">
                       <div className="relative rounded-md shadow-sm">
@@ -851,7 +949,7 @@ const CourseDetailPage = () => {
                       </div>
 
                       <button
-                        // onClick={handleSearchStudent}
+                        onClick={handleSearchStudent}
                         className="inline-flex items-start justify-start px-6 py-3 bg-green-600 hover:bg-green-500 focus:outline-none rounded"
                       >
                         <p className="text-sm font-medium leading-none text-white">
@@ -862,10 +960,10 @@ const CourseDetailPage = () => {
 
                     <div className="flex items-center">
                       <button
-                        // onClick={(e) => {
-                        //   e.preventDefault();
-                        //   setShowDialogAddStudent(true);
-                        // }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowDialogAddStudentToCourse(true);
+                        }}
                         className="inline-flex items-start justify-start px-6 py-3 bg-indigo-600 hover:bg-indigo-500 focus:outline-none rounded"
                       >
                         <p className="text-sm font-medium leading-none text-white">
@@ -994,36 +1092,23 @@ const CourseDetailPage = () => {
                             </td>
 
                             <td className="px-6">
-                              <button className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none">
+                              <Link
+                                href={`/student/${student.id}`}
+                                className="text-sm leading-none text-gray-600 py-3 px-5 bg-green-100 rounded-lg hover:bg-green-200 focus:outline-none"
+                              >
                                 View
-                              </button>
+                              </Link>
                             </td>
 
                             <td className="px-6">
-                              <div className="relative px-5 pt-2">
-                                <button
-                                  className="rounded-md focus:outline-none"
-                                  onClick={() => console.log("Add task")}
-                                  role="button"
-                                  aria-label="option"
-                                >
-                                  <EllipsisHorizontalCircleIcon className="w-6 text-gray-500" />
-                                </button>
-
-                                <div className="dropdown-content bg-white shadow w-24 absolute z-30 right-0 mr-6 hidden">
-                                  <div
-                                    tabIndex={0}
-                                    className="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
-                                  >
-                                    <p>Edit</p>
-                                  </div>
-                                  <div
-                                    tabIndex={0}
-                                    className="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
-                                  >
-                                    <p>Delete</p>
-                                  </div>
-                                </div>
+                              <div className="flex items-center justify-start">
+                                <TrashIcon
+                                  className="h-5 w-5 text-red-400 cursor-pointer"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setDeleteStudentId(student.id);
+                                  }}
+                                />
                               </div>
                             </td>
                           </tr>
@@ -1035,7 +1120,7 @@ const CourseDetailPage = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </>
         )}
       </Layout>
 
@@ -1100,6 +1185,189 @@ const CourseDetailPage = () => {
                         e.preventDefault();
                         setAddScheduleError(undefined);
                       }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      <Transition.Root show={showDialogAddStudentToCourse} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => {
+            setShowDialogAddStudentToCourse(false);
+            setAddStudentToCourseError(undefined);
+          }}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div className="w-full">
+                      <div className="mt-3 text-center sm:mt-0 sm:text-left">
+                        <Dialog.Title
+                          as="h3"
+                          className="text-base font-semibold leading-6 text-gray-900"
+                        >
+                          Add student to course
+                        </Dialog.Title>
+                        <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                          <div className="sm:col-span-full">
+                            <label
+                              htmlFor="student_code_or_email"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Student code or email
+                              <span className="text-red-500">*</span>
+                            </label>
+                            <div className="mt-2">
+                              {addStudentToCourseError && (
+                                <span className="text-sm text-red-400 italic">
+                                  {addStudentToCourseError}
+                                </span>
+                              )}
+                              <input
+                                type="text"
+                                name="student_code_or_email"
+                                placeholder={`Ex: "20230000" or "student@sample.com"`}
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setStudentCodeOrEmail(e.target.value);
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button
+                      type="button"
+                      className={classNames(
+                        !studentCodeOrEmail
+                          ? "bg-gray-500 cursor-not-allowed"
+                          : "bg-green-600 hover:bg-green-500",
+                        "inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto"
+                      )}
+                      onClick={handleAddStudentToCourse}
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowDialogAddStudentToCourse(false);
+                        setAddStudentToCourseError(undefined);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      <Transition.Root show={!!deleteStudentId} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setDeleteStudentId(undefined)}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <ExclamationTriangleIcon
+                          className="h-6 w-6 text-red-600"
+                          aria-hidden="true"
+                        />
+                      </div>
+                      <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                        <Dialog.Title
+                          as="h3"
+                          className="text-base font-semibold leading-6 text-gray-900"
+                        >
+                          Delete student from this course
+                        </Dialog.Title>
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-500">
+                            Are you sure you want to delete this student? All of
+                            student data on this course will be permanently
+                            removed. This action cannot be undone.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button
+                      type="button"
+                      className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                      onClick={handleDeleteStudentFromCourse}
+                    >
+                      Confirm delete
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={() => setDeleteStudentId(undefined)}
                     >
                       Cancel
                     </button>
