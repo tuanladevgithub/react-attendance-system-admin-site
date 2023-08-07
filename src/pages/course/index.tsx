@@ -31,18 +31,22 @@ import {
 const importTypes = [
   {
     id: 1,
+    type: "subject",
     title: "Import subjects",
   },
   {
     id: 2,
+    type: "course",
     title: "Import courses",
   },
   {
     id: 3,
+    type: "course-schedule",
     title: "Import course schedule",
   },
   {
     id: 4,
+    type: "course-participation",
     title: "Import course participation",
   },
 ];
@@ -66,7 +70,7 @@ const SubjectAndCoursePage = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [showDialogImportCsv, setShowDialogImportCsv] =
     useState<boolean>(false);
-  const [importCsvType, setImportCsvType] = useState<number>();
+  const [importCsvType, setImportCsvType] = useState<string>();
   const [fileCsv, setFileCsv] = useState<File>();
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
@@ -131,16 +135,16 @@ const SubjectAndCoursePage = () => {
       formData.append("file", fileCsv);
 
       let url = "";
-      if (importCsvType === 1)
+      if (importCsvType === "subject")
         url = `${ATTENDANCE_API_DOMAIN}/admin/upload-subject-csv`;
 
-      if (importCsvType === 2)
+      if (importCsvType === "course")
         url = `${ATTENDANCE_API_DOMAIN}/admin/upload-course-csv`;
 
-      if (importCsvType === 3)
+      if (importCsvType === "course-schedule")
         url = `${ATTENDANCE_API_DOMAIN}/admin/upload-course-schedule-csv`;
 
-      if (importCsvType === 4)
+      if (importCsvType === "course-participation")
         url = `${ATTENDANCE_API_DOMAIN}/admin/upload-course-participation-csv`;
 
       const { data } = await axios.post<{
@@ -164,6 +168,33 @@ const SubjectAndCoursePage = () => {
     setIsUploading(false);
   };
 
+  const handleDownloadDataCsvSample = async () => {
+    if (importCsvType) {
+      const { data } = await axios.get(
+        `${ATTENDANCE_API_DOMAIN}/admin/course-data-csv-sample`,
+        {
+          responseType: "blob",
+          params: {
+            type: importCsvType,
+          },
+        }
+      );
+
+      const href = URL.createObjectURL(data);
+
+      const anchorElement = document.createElement("a");
+
+      anchorElement.href = href;
+      anchorElement.download = `${importCsvType}-data-sample.csv`;
+
+      document.body.appendChild(anchorElement);
+      anchorElement.click();
+
+      document.body.removeChild(anchorElement);
+      URL.revokeObjectURL(href);
+    }
+  };
+
   const handleAddCourse = async () => {
     const url = `${ATTENDANCE_API_DOMAIN}/admin/create-course`;
 
@@ -178,7 +209,7 @@ const SubjectAndCoursePage = () => {
   return (
     <>
       <Layout>
-        <div className="bg-white rounded-lg shadow-xl">
+        <div className="border border-slate-200 bg-white rounded-lg shadow-xl">
           <div className="header-group w-full px-10 py-5">
             <h1 className="text-xl font-semibold text-gray-900">
               Subject & course management
@@ -601,7 +632,7 @@ const SubjectAndCoursePage = () => {
                                   name="import_type"
                                   onChange={(e) => {
                                     e.preventDefault();
-                                    setImportCsvType(parseInt(e.target.value));
+                                    setImportCsvType(e.target.value);
                                   }}
                                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6"
                                 >
@@ -609,7 +640,7 @@ const SubjectAndCoursePage = () => {
                                     {"-- Select import type --"}
                                   </option>
                                   {importTypes.map((type) => (
-                                    <option key={type.id} value={type.id}>
+                                    <option key={type.id} value={type.type}>
                                       {type.title}
                                     </option>
                                   ))}
@@ -634,6 +665,14 @@ const SubjectAndCoursePage = () => {
                                       setFileCsv(e.target.files[0]);
                                   }}
                                 />
+                                <div
+                                  className="mt-4"
+                                  onClick={handleDownloadDataCsvSample}
+                                >
+                                  <span className="italic text-blue-500 underline cursor-pointer">
+                                    or download file csv sample
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           </form>

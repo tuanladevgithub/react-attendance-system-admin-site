@@ -45,14 +45,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, [router, admin, error]);
 
   const menu = [
-    {
-      id: 1,
-      type: "single",
-      title: "Home",
-      path: "",
-      icon: homeIcon,
-      isActive: router.pathname === "/",
-    },
+    // {
+    //   id: 1,
+    //   type: "single",
+    //   title: "Home",
+    //   path: "",
+    //   icon: homeIcon,
+    //   isActive: router.pathname === "/",
+    // },
     {
       id: 2,
       type: "single",
@@ -104,14 +104,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     //     },
     //   ],
     // },
-    {
-      id: 6,
-      type: "single",
-      title: "Settings",
-      path: "setting",
-      icon: settingIcon,
-      isActive: router.pathname.startsWith("/setting"),
-    },
+    // {
+    //   id: 6,
+    //   type: "single",
+    //   title: "Settings",
+    //   path: "setting",
+    //   icon: settingIcon,
+    //   isActive: router.pathname.startsWith("/setting"),
+    // },
   ];
 
   return (

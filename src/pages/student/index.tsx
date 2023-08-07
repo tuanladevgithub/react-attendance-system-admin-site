@@ -114,6 +114,28 @@ const StudentPage = () => {
     setIsUploading(false);
   };
 
+  const handleDownloadStudentDataCsvSample = async () => {
+    const { data } = await axios.get(
+      `${ATTENDANCE_API_DOMAIN}/admin/student-data-csv-sample`,
+      {
+        responseType: "blob",
+      }
+    );
+
+    const href = URL.createObjectURL(data);
+
+    const anchorElement = document.createElement("a");
+
+    anchorElement.href = href;
+    anchorElement.download = `student-data-sample.csv`;
+
+    document.body.appendChild(anchorElement);
+    anchorElement.click();
+
+    document.body.removeChild(anchorElement);
+    URL.revokeObjectURL(href);
+  };
+
   const handleAddStudent = async () => {
     const url = `${ATTENDANCE_API_DOMAIN}/admin/create-student`;
 
@@ -128,7 +150,7 @@ const StudentPage = () => {
   return (
     <>
       <Layout>
-        <div className="bg-white rounded-lg shadow-xl">
+        <div className="border border-slate-200 bg-white rounded-lg shadow-xl">
           <div className="header-group w-full px-10 py-5">
             <h1 className="text-xl font-semibold text-gray-900">
               Student management
@@ -486,6 +508,14 @@ const StudentPage = () => {
                               />
                             </label>
                           </form>
+                          <div
+                            className="mt-4"
+                            onClick={handleDownloadStudentDataCsvSample}
+                          >
+                            <span className="italic text-blue-500 underline cursor-pointer">
+                              or download file csv sample
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>

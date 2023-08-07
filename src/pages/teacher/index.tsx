@@ -120,6 +120,28 @@ const TeacherPage = () => {
     setIsUploading(false);
   };
 
+  const handleDownloadTeacherDataCsvSample = async () => {
+    const { data } = await axios.get(
+      `${ATTENDANCE_API_DOMAIN}/admin/teacher-data-csv-sample`,
+      {
+        responseType: "blob",
+      }
+    );
+
+    const href = URL.createObjectURL(data);
+
+    const anchorElement = document.createElement("a");
+
+    anchorElement.href = href;
+    anchorElement.download = `teacher-data-sample.csv`;
+
+    document.body.appendChild(anchorElement);
+    anchorElement.click();
+
+    document.body.removeChild(anchorElement);
+    URL.revokeObjectURL(href);
+  };
+
   const handleAddTeacher = async () => {
     const url = `${ATTENDANCE_API_DOMAIN}/admin/create-teacher`;
 
@@ -134,7 +156,7 @@ const TeacherPage = () => {
   return (
     <>
       <Layout>
-        <div className="bg-white rounded-lg shadow-xl">
+        <div className="border border-slate-200 bg-white rounded-lg shadow-xl">
           <div className="header-group w-full px-10 py-5">
             <h1 className="text-xl font-semibold text-gray-900">
               Teacher management
@@ -510,6 +532,14 @@ const TeacherPage = () => {
                               />
                             </label>
                           </form>
+                          <div
+                            className="mt-4"
+                            onClick={handleDownloadTeacherDataCsvSample}
+                          >
+                            <span className="italic text-blue-500 underline cursor-pointer">
+                              or download file csv sample
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
