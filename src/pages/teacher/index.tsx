@@ -523,7 +523,7 @@ const TeacherPage = () => {
                               <span className="sr-only">Choose csv file</span>
                               <input
                                 type="file"
-                                className="block w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border file:border-green-600 file:border-dashed file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 file:cursor-pointer hover:file:bg-green-100 focus:outline-none"
+                                className="block w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-indigo-600 file:border-dashed file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 file:cursor-pointer hover:file:bg-indigo-100 focus:outline-none"
                                 accept=".csv"
                                 onChange={(e) => {
                                   if (e.target.files)
